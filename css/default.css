@@ -1,0 +1,110 @@
+body {
+	margin-top: 75px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*--- Bootstrap like callout ---*/
+.bs-callout {padding: 20px;margin: 20px 0;border: 1px solid #eee;border-left-width: 5px;border-radius: 3px;}
+.bs-callout h4 {margin-top: 0;margin-bottom: 5px;}
+.bs-callout p:last-child {margin-bottom: 0;}
+.bs-callout code {border-radius: 3px;}
+.bs-callout+.bs-callout {margin-top: -5px;}
+
+.bs-callout-default {border-left-color: #777;}
+.bs-callout-default h1,.bs-callout-default h2,.bs-callout-default h3,.bs-callout-default h4 {color: #777;}
+
+.bs-callout-primary {border-left-color: #428bca;}
+.bs-callout-primary h1,.bs-callout-primary h2,.bs-callout-primary h3,.bs-callout-primary h4 {color: #428bca;}
+
+.bs-callout-success {border-left-color: #5cb85c;}
+.bs-callout-success h1,.bs-callout-success h2,.bs-callout-success h3,.bs-callout-success h4 {color: #5cb85c;}
+
+.bs-callout-danger {border-left-color: #d9534f;}
+.bs-callout-danger h1,.bs-callout-danger h2,.bs-callout-danger h3,.bs-callout-danger h4 {color: #d9534f;}
+
+.bs-callout-warning {border-left-color: #f0ad4e;}
+.bs-callout-warning h1,.bs-callout-warning h2,.bs-callout-warning h3,.bs-callout-warning h4 {color: #f0ad4e;}
+
+.bs-callout-info {border-left-color: #5bc0de;}
+.bs-callout-info h1,.bs-callout-info h2,.bs-callout-info h3,.bs-callout-info h4 {color: #5bc0de;}
+
+.bg-default {background-color: #777;}
+.bg-primary {background-color: #428bca;}
+.bg-success {background-color: #5cb85c;}
+.bg-danger {background-color: #d9534f;}
+.bg-warning {background-color: #f0ad4e;}
+.bg-info {background-color: #5bc0de;}
+
+/*--- form validation styling ---*/
+.ng-valid {
+}
+.ng-dirty.ng-valid {
+
+}
+
+.ng-dirty.ng-invalid {
+}
+
+input {width:100%;}
+
+.hidden {display:none;}
+
+/*--- highlighting selected rows---*/
+.selected td {
+background-color: #5bc0de;
+}
+
+/*--- icon for the application---*/
+.navbar-brand > img {
+    width:auto;
+	height:auto;
+	max-height: 100%;
+	max-width: 100%;
+	float:left;
+	margin-right: 5px;
+}
+
+.italic {font-style:italic;}
+.light {font-weight:lighter;}
+.bold {font-weight:bold;}
+
+.hidden {display: none !important;}
+
+
+/*--- Frontpage crap ---*/
+.jumbotron .content {width:75%;}
+.jumbotron .graphics {width:25%;}
+.jumbotron > div {float:left;}
+.jumbotron .graphics img {width:100%;}
+
+.functionality-panel {
+position:fixed;
+right:30px;
+bottom:0;
+box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+border-bottom-left-radius:0;
+border-bottom-right-radius:0;
+}
+
+.panel.functionality-panel {margin-bottom:0px;}
+.functionality-panel .btn.disabled {display:none;}
+
+#loading-spinner {
+    width:300px;
+    height:100px;
+    position:fixed;
+    top:50%;
+    left:50%;
+    margin-top:-50px;
+    margin-left:-150px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background-color:rgba(255,255,255,0.7);
+    text-align:center;
+    padding:30px;
+}
+
+.logged-user {
+float:right;
+padding-right:15px;
+line-height:50px;
+}

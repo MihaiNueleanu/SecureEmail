@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>    
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <%--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">--%>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     
     <link rel="stylesheet" type="text/css" href="css/default.css">
 </head>
@@ -43,6 +43,56 @@
         <img src="images/loader.gif" />
     </div>
     <div ng-view ng-cloak></div>
+
+    <?php
+        require_once 'src/custom/functions.php';
+
+        //HTML page start
+        echo '<!DOCTYPE HTML><html>';
+        echo '<head>';
+        echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+        echo '<title>Login with Google</title>';
+        echo '</head>';
+        echo '<body>';
+        echo '<h1>Login with Google</h1>';
+
+        if(isset($authUrl)) //user is not logged in, show login button
+        {
+            echo '<a class="login" href="'.$authUrl.'">CLICK HERE</a>';
+        }
+        else // user logged in
+        {
+            /* connect to database using mysqli */
+            $mysqli = new mysqli($hostname, $db_username, $db_password, $db_name);
+
+            if ($mysqli->connect_error) {
+                die('Error : ('. $mysqli->connect_errno .') '. $mysqli->connect_error);
+            }
+
+            //compare user id in our database
+            $user_exist = $mysqli->query("SELECT COUNT(google_id) as usercount FROM google_users WHERE google_id=$user_id")->fetch_object()->usercount;
+            if($user_exist)
+            {
+                echo 'Welcome back '.$user_name.'!';
+            }else{
+                //user is new
+                echo 'Hi '.$user_name.', Thanks for Registering!';
+                $mysqli->query("INSERT INTO google_users (google_id, google_name, google_email, google_link, google_picture_link)
+            VALUES ($user_id, '$user_name','$email','$profile_url','$profile_image_url')");
+            }
+
+
+            echo '<br /><a href="'.$profile_url.'" target="_blank"><img src="'.$profile_image_url.'?sz=100" /></a>';
+            echo '<br /><a class="logout" href="?reset=1">Logout</a>';
+
+            //list all user details
+            echo '<pre>';
+            print_r($user);
+            echo '</pre>';
+        }
+
+        echo '</body></html>';
+    ?>
 
     <!-- loading scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
