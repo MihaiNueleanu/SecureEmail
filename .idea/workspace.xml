@@ -34,7 +34,6 @@
             <state vertical-scroll-proportion="-11.115385" vertical-offset="510" max-vertical-offset="2023">
               <caret line="47" column="32" selection-start-line="47" selection-start-column="32" selection-end-line="47" selection-end-column="32" />
               <folding>
-                <marker date="1429271100335" expanded="true" signature="3191:3262" placeholder="SELECT COUNT..google_users..." />
                 <marker date="1429271100335" expanded="true" signature="3544:3730" placeholder="INSERT INTO ..." />
               </folding>
             </state>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html ng-app="EmailApp">
+  <head>
+    <meta charset="utf-8">
+    <title>AngularJS Email App</title>
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+      display: none !important;
+    }
+    </style>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	<script src="https://apis.google.com/js/client.js"></script>
+    <script>
+      function auth() {
+        var config = {
+          'client_id': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
+          'scope': 'https://mail.google.com/'
+        };
+        gapi.auth.authorize(config, function() {
+          console.log('login complete');
+          console.log(gapi.auth.getToken());
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <header class="header" role="banner">
+      <div class="header__text">
+      </div>
+    </header>
+	
+	<button onclick="auth();">Authorize</button>
+
+	
+    <main class="main" role="main">
+      <div ng-view class="flex"></div>
+    </main>
+
+    <!-- Vendor libraries -->
+    <script src="lib/jquery-v1.11.1.js"></script>
+    <script src="lib/angular-v1.2.22.js"></script>
+    <script src="lib/angular-route-v1.2.22.js"></script>
+    <script src="lib/angular-sanitize-v1.2.22.js"></script>
+    <!-- Application Files -->
+    <script src="js/app.js"></script>
+    <script src="js/controllers/InboxCtrl.js"></script>
+    <script src="js/controllers/EmailCtrl.js"></script>
+    <script src="js/factories/InboxFactory.js"></script>
+    <script src="js/factories/EmailFactory.js"></script>
+    <script src="js/directives/InboxDrctv.js"></script>
+    <script src="js/directives/EmailDrctv.js"></script>
+  </body>
+</html>
