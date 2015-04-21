@@ -17,11 +17,9 @@
 		<div class="navbar-header">
 			<button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
 			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
+			<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 			</button>
-			<a href="#" class="navbar-brand"><img src="images/logo.svg" />FMF <span class="light">CORE</span></a>
+			<a href="#" class="navbar-brand"><img src="images/icon.png"/>Mizaru<span class="light"></span></a>
 		</div>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="nav navbar-nav" ng-repeat="link in nav.links">
@@ -38,61 +36,25 @@
         <span class="sr-only">Error:</span>
         {{flash.getMessage()}}
     </div>
+
+
+    <span ng-show="signedIn == false" id="googleSignIn"><span id="signInButton"></span></span>
+    <script>
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+
+    <!--- Loader Use later
     <div id="loading-spinner" class="alert">
         <p>Loading, please wait.</p>
         <img src="images/loader.gif" />
-    </div>
+    </div> --->
     <div ng-view ng-cloak></div>
 
-    <?php
-        require_once 'src/custom/functions.php';
-
-        //HTML page start
-        echo '<!DOCTYPE HTML><html>';
-        echo '<head>';
-        echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
-        echo '<title>Login with Google</title>';
-        echo '</head>';
-        echo '<body>';
-        echo '<h1>Login with Google</h1>';
-
-        if(isset($authUrl)) //user is not logged in, show login button
-        {
-            echo '<a class="login" href="'.$authUrl.'">CLICK HERE</a>';
-        }
-        else // user logged in
-        {
-            /* connect to database using mysqli */
-            $mysqli = new mysqli($hostname, $db_username, $db_password, $db_name);
-
-            if ($mysqli->connect_error) {
-                die('Error : ('. $mysqli->connect_errno .') '. $mysqli->connect_error);
-            }
-
-            //compare user id in our database
-            $user_exist = $mysqli->query("SELECT COUNT(google_id) as usercount FROM google_users WHERE google_id=$user_id")->fetch_object()->usercount;
-            if($user_exist)
-            {
-                echo 'Welcome back '.$user_name.'!';
-            }else{
-                //user is new
-                echo 'Hi '.$user_name.', Thanks for Registering!';
-                $mysqli->query("INSERT INTO google_users (google_id, google_name, google_email, google_link, google_picture_link)
-            VALUES ($user_id, '$user_name','$email','$profile_url','$profile_image_url')");
-            }
-
-
-            echo '<br /><a href="'.$profile_url.'" target="_blank"><img src="'.$profile_image_url.'?sz=100" /></a>';
-            echo '<br /><a class="logout" href="?reset=1">Logout</a>';
-
-            //list all user details
-            echo '<pre>';
-            print_r($user);
-            echo '</pre>';
-        }
-
-        echo '</body></html>';
-    ?>
 
     <!-- loading scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
@@ -102,11 +64,11 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-    <!-- general functions -->    
-    <script type="text/javascript" src="js/js.functions.js"></script>
-    
+    <!-- general functions -->
+    <script type="text/javascript" src="js/functions.js"></script>
     <!-- angularJS scripts -->
     <script type="text/javascript" src="js/ng.app.js"></script>
+
 
 </body>
 </html>

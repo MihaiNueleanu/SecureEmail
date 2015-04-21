@@ -80,71 +80,14 @@
     app.factory('dataFactory', ['CONFIG', '$cookies', '$http', function (CONFIG, $cookies, $http) {
         var dataFactory = {};
 
+
         /*--- getters and setters for data User GUID ---*/
-        dataFactory.getXXX = function () {
-            return dataXXX;
+        dataFactory.getDataUserGuid = function () {
+            return dataUserGuid;
         };
-        dataFactory.setXXX = function (x) {
-            dataXXX = x;
+        dataFactory.setDataUserGuid = function (user) {
+            dataUserGuid = user;
         };
-
-        /*--- building URL string ---*/
-        dataFactory.buildUrl = function (url) {
-            url = url.toString().toLowerCase(); 
-            tempUrl = CONFIG.URLS.BASE;
-            switch(url) {
-                case "sso":
-                    tempUrl = tempUrl + CONFIG.URLS.SSO;
-                    break;
-                case "field":
-                    tempUrl = tempUrl + CONFIG.URLS.FIELD;
-                    break;
-                case "entity":
-                    tempUrl = tempUrl + CONFIG.URLS.ENTITY;
-                    break;
-                case "universe":
-                    tempUrl = tempUrl + CONFIG.URLS.UNIVERSE;
-                    break;
-                case "user":
-                    tempUrl = tempUrl + CONFIG.URLS.USER;
-                    break;
-                default:
-                    throw "UNKNOWN URL: " + url;
-                    tempUrl;
-            }
-            return tempUrl;
-        };
-
-        /*--- building params string ---*/
-        dataFactory.buildParams = function (params) {
-            var tempParams = "?" + decodeURIComponent($.param(params));
-            console.log("tempParams: " + tempParams);
-            return tempParams;
-        };
-
-        /*--- building a query from everything---*/
-        dataFactory.buildQuery = function () {
-            var dfQuery = "";
-            console.log("DATAFACTORY- trying to build query: (" + dfQuery + ") ,url: (" + dataFactory.getDataUrl() + ") ,selectedFactoryId: (" + dataFactory.getSelectedId() + ") ,params: (" + dataFactory.getDataParams() + ")");
-
-            //if dataFactory.getDataUrl() then add it to tempQuery
-            if (dataFactory.getDataUrl() != undefined) {
-                console.log("DATAFACTORY.getDataUrl() " + dataFactory.getDataUrl());
-                url = dataFactory.buildUrl(dataFactory.getDataUrl());
-                dfQuery = dfQuery + url;
-            }
-
-            //if dataFactory.getDataParams() then add it to tempQuery
-            if (Object.keys(dataFactory.getDataParams()).length) {
-                console.log("DATAFACTORY params: " + dataFactory.getDataParams());
-                params = dataFactory.buildParams(dataFactory.getDataParams());
-                dfQuery = dfQuery + params;
-            }
-
-            console.log("DATAFACTORY- full query: " + dfQuery);
-            return dfQuery;
-        }
-
         /*--- getData ---*/
         dataFactory.getData = function () {
             return $http.get(dataFactory.buildQuery());
@@ -163,7 +106,20 @@
                 //params = dataFactory.buildParams(params);
                 console.log("DATAFACTORY- API(p): " + url + ", " + params);
                 return $http.post(url , params);
+            } else {
+                //currently should only be used by SSO
+                var validateSsoReq = {
+                    "Token": fcssoCookie,
+                    "SetCookie": true,
+                };
+
+                console.log("DATAFACTORY- API(p-SSO): " + url + ", " + validateSsoReq);
+                return $http.post(url, validateSsoReq);
             }
+        };
+
+        dataFactory.SignInController = function() {
+
         };
 
         return dataFactory;
@@ -223,7 +179,6 @@
         // Button "go" (navigate to a single entity page)
         $scope.go = function (path, params) {
             if (params != undefined && params == "clearSelected") {
-                console.log("should clear selectedId: " + dataFactory.getSelectedId())
                 dataFactory.setSelectedId(null);
                 $scope.selectedIndex = null;
                 $scope.selectedId = null;
@@ -232,76 +187,83 @@
             console.log("MAINCONTROLLER.go(): " + path + "/" + dataFactory.getSelectedId());
             $location.path(path);
         };
+
+        //Google sign in
+        $scope.signedIn = false;
+        $scope.processAuth = function(authResult) {
+            if(authResult['access_token']) {
+                $scope.signedIn = true;
+
+                //todo
+            } else if(authResult['error']) {
+                $scope.signedIn = false;
+            }
+        };
+
+        // When callback is received, we need to process authentication.
+        $scope.signInCallback = function(authResult) {
+            $scope.$apply(function() {
+                $scope.processAuth(authResult);
+            });
+        };
+
+        // Render the sign in button.
+        $scope.renderSignInButton = function() {
+            gapi.client.setApiKey('AIzaSyAHAOWrOIJmEVRIfzl0rcEiNW-cE7qBgSk');
+            gapi.signin.render('signInButton',
+                {
+                    'callback': $scope.signInCallback,
+                    'clientid': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
+
+                    'requestvisibleactions': 'http://schemas.google.com/AddActivity',
+                    'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email https://mail.google.com/',
+                    'cookiepolicy': 'single_host_origin',
+                }
+            );
+        }
+
+        $scope.start = function() {
+            $scope.renderSignInButton();
+        };
+        $scope.start();
+
+        $scope.processUserInfo = function(userInfo) {
+            // Or use his email address to send e-mails to his primary e-mail address.
+            console.log(userInfo['emails'][0]['value'])
+        }
+
+        // When callback is received, process user info.
+        $scope.userInfoCallback = function(userInfo) {
+            $scope.$apply(function() {
+                $scope.processUserInfo(userInfo);
+            });
+        };
+
+        // Request user info.
+        $scope.getUserInfo = function() {
+            gapi.client.request(
+                {
+                    'path':'/plus/v1/people/me',
+                    'method':'GET',
+                    'callback': $scope.userInfoCallback
+                }
+            );
+        };
+        $scope.getUserInfo();
     }]);
 
     /*fields controller*/
     app.controller('emailsController', ['$scope', 'dataFactory', function ($scope, dataFactory) {
-        dataFactory.setDataUrl("field");
 
-        $scope.data;
-        $scope.search = "";
 
-        getData();
 
-        //get data to page.
-        function getData() {
-            dataFactory.getData().success(function (data) { $scope.data = data; console.log($scope.data); })
-        }
-
-        //search function
-        $scope.$watch('search', function (tmpStr) {
-            minSearchLength = 2;
-            if (!tmpStr || tmpStr.length < minSearchLength) {
-                dataFactory.deleteDataParams("search");
-            } else if (tmpStr === $scope.search && tmpStr.length >= minSearchLength) {
-                dataFactory.setDataParams("search", tmpStr);
-                getData();
-            }
-        });
     }]);
 
     /*single field controller (new,edit & delete )*/
     app.controller('singleEmailController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
-        dataFactory.setDataUrl("field");
-        $scope.flash = flash;
-        $scope.currentDate = Date($.now());
-        $scope.data;
 
-        //initialize the view
-        this.init = function () {
-            if (dataFactory.getSelectedId()) {
-                console.log("i am editing a field: " + dataFactory.getSelectedId);
-                dataFactory.getData().success(function (data) { $scope.data = data; console.log($scope.data); })
-            } else {
-                console.log("this must be a new field! lets place some crap data in it.");
-                $scope.data = {
-                    "Field":
-                        {
-                            "Created": $scope.currentDate,
 
-                            "Id":"",
-                            "Datatype": "",
-                            "Created":""
-                        },
-                    "ApiVersion": 1,
-                    "ErrorMessage": null,
-                    "RequestId": null
-                };
-                console.log($scope.data);
-            }
-        }
 
-        this.init();
-
-        //save (navigate to a single entity page)
-        $scope.save = function (url, data) {
-            if (data.Field.Created == "") {
-                data.Field.Created = $scope.currentDate;
-            }
-            console.log("Save function called!");
-            console.log(data," ,url: "+ url);
-            dataFactory.postData(url, data).success(function (data) { flash.setMessage("changes saved successfully"); })
-        };
     }]);
 
     /*initialize bootstrap*/
