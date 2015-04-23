@@ -124,27 +124,6 @@
         return dataFactory;
     }]);
 
-    app.factory("GPlusAuthService", function ($q, $window) {
-        var signIn;
-        signIn = function () {
-            var defered = $q.defer();
-            $window.signinCallback = function (response) {
-                $window.signinCallback = undefined;
-                defered.resolve(response);
-            };
-
-            gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
-            gapi.auth.signIn({
-                callback: "signinCallback",
-                'clientid': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
-                'requestvisibleactions': 'http://schemas.google.com/AddActivity',
-                'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email https://mail.google.com/',
-                'cookiepolicy': 'single_host_origin'
-            });
-            return defered.promise;
-        };
-        return { signIn: signIn }
-    });
     /*configuring data service for bindings*/
     app.factory("flash", function ($rootScope, $timeout) {
         var queue = [];
@@ -194,48 +173,10 @@
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService', function ($scope, flash, $location, dataFactory, GPlusAuthService) {
+    app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', function ($scope, flash, $location, dataFactory) {
         $scope.signedIn = false;
         $scope.email = null;
         $scope.displayName = null;
-
-        $scope.getUserInfo = function(){
-            gapi.client.load('plus', 'v1').then(function() {
-                var request = gapi.client.plus.people.get({
-                    'userId': 'me'
-                });
-                request.then(function(response) {
-                    console.log(response.result);
-                    $scope.$apply(function(){
-                        $scope.email = response.result.emails[0].value;
-                        $scope.displayName = response.result.displayName;
-                    });
-
-                }, function(reason) {
-                    console.log('Error: ' + reason.result.error.message);
-                });
-            });
-        };
-        $scope.getEmails = function(){
-            gapi.client.load('gmail', 'v1').then(function() {
-                var request = gapi.client.request({
-                    'userId': 'me'
-                });
-                request.then(function(response) {
-                    console.log(response.result);
-                    $scope.$apply(function(){
-                        $scope.email = response.result.emails[0].value;
-                        $scope.displayName = response.result.displayName;
-                    });
-
-                }, function(reason) {
-                    console.log('Error: ' + reason.result.error.message);
-                });
-            });
-        };
-        $scope.isSignedIn = function() {
-            return $scope.signedIn;
-        };
 
         // Button "go" (navigate to a single entity page)
         $scope.go = function (path, params) {
@@ -249,14 +190,61 @@
             $location.path(path);
         };
 
+        //Google sign in
+        $scope.processAuth = function(authResult) {
+            if(authResult['access_token']) {
+                $scope.signedIn = true;
+                console.log('logged in - ' + authResult['access_token']);
+                //$scope.getUserInfo();
+
+            } else if(authResult['error']) {
+                $scope.signedIn = false;
+                console.log('logged out');
+            }
+        };
+
         // When callback is received, we need to process authentication.
-        $scope.signIn = function() {
-            GPlusAuthService.signIn().then(function(response) {
-                $scope.getUserInfo();
+        $scope.signInCallback = function(authResult) {
+            $scope.$apply(function() {
+                $scope.processAuth(authResult);
             });
         };
 
-        $scope.signIn();
+        // Render the sign in button.
+        $scope.init = function() {
+            gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
+            gapi.signin.render('signInButton',
+                {
+                    'callback': $scope.signInCallback,
+                    'clientid': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
+                    'requestvisibleactions': 'http://schemas.google.com/AddActivity',
+                    'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email https://mail.google.com/',
+                    'cookiepolicy': 'single_host_origin'
+                }
+            );
+        }
+
+
+        $scope.init();
+
+
+        $scope.getUserInfo = function(){
+            res = '';
+            gapi.client.load('plus', 'v1').then(function() {
+                var request = gapi.client.plus.people.get({
+                    'userId': 'me'
+                });
+                request.then(function(response) {
+                    console.log(response.result);
+                    $scope.email = response.result.emails[0].value;
+                    $scope.displayName = response.result.displayName;
+                    console.log('email is - ' + $scope.email );
+                    console.log('name is - ' + $scope.displayName);
+                }, function(reason) {
+                    console.log('Error: ' + reason.result.error.message);
+                });
+            });
+        };
 
     }]);
 
