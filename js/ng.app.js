@@ -67,7 +67,7 @@
             templateUrl: 'views/emails/index.html',
             controller: 'emailsController'
         }).
-        when('/email', {
+        when('/email/:param1', {
             templateUrl: 'views/email/index.html',
             controller: 'singleEmailController'
         }).
@@ -83,43 +83,6 @@
     /*configuring data service for bindings*/
     app.factory('dataFactory', ['CONFIG', '$cookies', '$http', function (CONFIG, $cookies, $http) {
         var dataFactory = {};
-
-        /*--- getters and setters for data User GUID ---*/
-        dataFactory.getDataUserGuid = function () {
-            return dataUserGuid;
-        };
-        dataFactory.setDataUserGuid = function (user) {
-            dataUserGuid = user;
-        };
-        /*--- getData ---*/
-        dataFactory.getData = function () {
-            return $http.get(dataFactory.buildQuery());
-        };
-
-        /*--- deleteData ---*/
-        dataFactory.deleteData = function () {
-            return $http.delete(dataFactory.buildQuery());
-        };
-
-        /*--- postData (using built URL + built Params) ---*/
-        dataFactory.postData = function (url, params) {
-            console.log("im in the datafactory got this as URL: " + url);
-            url = dataFactory.buildUrl(url);
-            if (params != undefined) {
-                //params = dataFactory.buildParams(params);
-                console.log("DATAFACTORY- API(p): " + url + ", " + params);
-                return $http.post(url , params);
-            } else {
-                //currently should only be used by SSO
-                var validateSsoReq = {
-                    "Token": fcssoCookie,
-                    "SetCookie": true,
-                };
-
-                console.log("DATAFACTORY- API(p-SSO): " + url + ", " + validateSsoReq);
-                return $http.post(url, validateSsoReq);
-            }
-        };
 
         return dataFactory;
     }]);
@@ -189,7 +152,6 @@
 
         this.navClick = function (link) {
             this.link = link;
-            dataFactory.setSelectedId("");
         };
     }]);
 
@@ -207,64 +169,59 @@
                 request.then(function(response) {
                     console.log(response.result);
                     $scope.$apply(function(){
-                        $scope.email = response.result.emails[0].value;
+                        $scope.userEmail = response.result.emails[0].value;
                         $scope.displayName = response.result.displayName;
                         $scope.userImage = response.result.image.url;
                     });
 
-                    gapi.client.request({
-                        'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages',
-                        'method': 'GET',
-                        'headers': {
-                            'Content-Type': 'application/json'
-                        },
-                        'callback': function(jsonResponse, rawResponse) {
-                            // Response is inserted Calendar
-                            console.log(jsonResponse);
-                            $scope.$apply(function(){
-                                $scope.emailList = jsonResponse;
-                            });
-                        }
-                    });
+                    $scope.getEmailsBatch($scope.userEmail);
 
-
-                }, function(reason) {
+                },function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
             });
         };
-
-        $scope.getMessage = function(id){
+        $scope.getEmailsBatch = function(userEmail){
             gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + id,
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages',
                 'method': 'GET',
                 'headers': {
                     'Content-Type': 'application/json'
                 },
                 'callback': function(jsonResponse, rawResponse) {
-                    // Response is inserted Calendar
                     console.log(jsonResponse);
                     $scope.$apply(function(){
                         $scope.emailList = jsonResponse;
                     });
+
+                    batchRequest = gapi.client.Batch;
+                    for(i=0;i<$scope.emailList.length;i++){
+                        console.log('added' + emailList[i].id);
+                        batchRequest.add({
+                            'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + emailList[i].id,
+                            'method': 'GET',
+                            'headers': {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    }
+                    batchRequest.execute(function(response){
+                        console.log(response);
+                    });
                 }
             });
-        }
+
+        };
 
         $scope.isSignedIn = function() {
             return $scope.signedIn;
         };
 
         // Button "go" (navigate to a single entity page)
-        $scope.go = function (path, params) {
-            if (params != undefined && params == "clearSelected") {
-                dataFactory.setSelectedId(null);
-                $scope.selectedIndex = null;
-                $scope.selectedId = null;
-                console.log("selectedId should now be null: " + dataFactory.getSelectedId())
-            }
-            console.log("MAINCONTROLLER.go(): " + path + "/" + dataFactory.getSelectedId());
-            $location.path(path);
+        $scope.go = function (path) {
+            $scope.$apply(function() {
+                $location.path(path);
+            });
         };
 
         // When callback is received, we need to process authentication.
@@ -286,18 +243,34 @@
     }]);
 
     /*single field controller (new,edit & delete )*/
-    app.controller('singleEmailController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
+    app.controller('singleEmailController', [ '$scope' , 'flash' , 'dataFactory' , '$http' , '$routeParams' , function ( $scope , flash , dataFactory, $http , $routeParams ) {
+        $scope.EMAILID = $routeParams.param1;
+        console.log('params are - '+$scope.EMAILID);
 
-
+        $scope.getMessage = function(id){
+            gapi.client.request({
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + id,
+                'method': 'GET',
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                'callback': function(jsonResponse, rawResponse) {
+                    console.log(jsonResponse);
+                    $scope.$apply(function(){
+                        $scope.from = jsonResponse.payload.headers[12].value;
+                    });
+                }
+            });
+        }
+        $scope.getMessage($scope.EMAILID);
 
     }]);
 
     /*home controller*/
-    app.controller('homeController', ['$scope', 'flash', 'dataFactory','$http', function ($scope, flash, dataFactory, $http) {
+    app.controller('homeController', ['$scope' , 'flash' , 'dataFactory' , '$http' , '$routeParams' , function ( $scope , flash , dataFactory , $http , $routeParams ) {
 
         $(document).on('click','.email-list .email-object', function(){
-            this.id = $(this).attr('data-email-id');
-            $scope.getMessage(this.id);
+            $scope.go('/email/'+ $(this).attr('data-email-id'));
         });
 
     }]);
