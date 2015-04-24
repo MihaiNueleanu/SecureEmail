@@ -194,7 +194,7 @@
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService', function ($scope, flash, $location, dataFactory, GPlusAuthService) {
+    app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService','$http', function ($scope, flash, $location, dataFactory, GPlusAuthService,$http) {
         $scope.signedIn = false;
         $scope.email = null;
         $scope.displayName = null;
@@ -209,30 +209,48 @@
                     $scope.$apply(function(){
                         $scope.email = response.result.emails[0].value;
                         $scope.displayName = response.result.displayName;
+                        $scope.userImage = response.result.image.url;
                     });
+
+                    gapi.client.request({
+                        'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages',
+                        'method': 'GET',
+                        'headers': {
+                            'Content-Type': 'application/json'
+                        },
+                        'callback': function(jsonResponse, rawResponse) {
+                            // Response is inserted Calendar
+                            console.log(jsonResponse);
+                            $scope.$apply(function(){
+                                $scope.emailList = jsonResponse;
+                            });
+                        }
+                    });
+
 
                 }, function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
             });
         };
-        $scope.getEmails = function(){
-            gapi.client.load('gmail', 'v1').then(function() {
-                var request = gapi.client.request({
-                    'userId': 'me'
-                });
-                request.then(function(response) {
-                    console.log(response.result);
+
+        $scope.getMessage = function(id){
+            gapi.client.request({
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + id,
+                'method': 'GET',
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                'callback': function(jsonResponse, rawResponse) {
+                    // Response is inserted Calendar
+                    console.log(jsonResponse);
                     $scope.$apply(function(){
-                        $scope.email = response.result.emails[0].value;
-                        $scope.displayName = response.result.displayName;
+                        $scope.emailList = jsonResponse;
                     });
-
-                }, function(reason) {
-                    console.log('Error: ' + reason.result.error.message);
-                });
+                }
             });
-        };
+        }
+
         $scope.isSignedIn = function() {
             return $scope.signedIn;
         };
@@ -275,9 +293,12 @@
     }]);
 
     /*home controller*/
-    app.controller('homeController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
+    app.controller('homeController', ['$scope', 'flash', 'dataFactory','$http', function ($scope, flash, dataFactory, $http) {
 
-
+        $(document).on('click','.email-list .email-object', function(){
+            this.id = $(this).attr('data-email-id');
+            $scope.getMessage(this.id);
+        });
 
     }]);
 

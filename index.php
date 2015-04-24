@@ -27,7 +27,7 @@
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
                 </li> 
 			</ul>
-            <span class="logged-user" ng-show="username">logged in as: {{username}}</span>
+            <span class="logged-user" ng-show="displayName">{{displayName}} <img src="{{userImage}}" /></span>
 
         </div>
     </nav>
