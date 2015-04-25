@@ -2,14 +2,10 @@
     /*creating app (currently adding coockies and route)*/
     var app = angular.module('app', ['ngCookies', 'ngRoute']);
 
-    /*"URLBASE": "http://localhost.fc.local/Fmf2Services/api",*/
     app.constant("CONFIG", {
         "TEXT": {
             "ERROR": "Something went wrong...",
             "SUCCESS": "Hurray it worked!"
-        },
-        "URLS": {
-            "BASE": "/google/api/XXX"
         },
         "LINKS": [
 	        {
@@ -158,8 +154,9 @@
     /*main controller (general table row selection + displaying messages)*/
     app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService','$http', function ($scope, flash, $location, dataFactory, GPlusAuthService,$http) {
         $scope.signedIn = false;
-        $scope.email = null;
+        $scope.userEmail = null;
         $scope.displayName = null;
+        $scope.emailBulk = null;
 
         $scope.getUserInfo = function(){
             gapi.client.load('plus', 'v1').then(function() {
@@ -183,34 +180,36 @@
         };
         $scope.getEmailsBatch = function(userEmail){
             gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages',
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults=20',
                 'method': 'GET',
                 'headers': {
                     'Content-Type': 'application/json'
                 },
                 'callback': function(jsonResponse, rawResponse) {
                     console.log(jsonResponse);
-                    $scope.$apply(function(){
-                        $scope.emailList = jsonResponse;
-                    });
+                    $scope.emailList = jsonResponse;
 
-                    batchRequest = gapi.client.Batch;
-                    for(i=0;i<$scope.emailList.length;i++){
-                        console.log('added' + emailList[i].id);
-                        batchRequest.add({
-                            'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + emailList[i].id,
-                            'method': 'GET',
-                            'headers': {
-                                'Content-Type': 'application/json'
-                            }
+                    var batchRequest = gapi.client.newBatch();
+                    for(i=0;i< $scope.emailList.messages.length;i++){
+                        console.log('added - ' + $scope.emailList.messages[i].id);
+                        batchRequest.add(
+                            gapi.client.request({
+                                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + $scope.emailList.messages[i].id,
+                                'method': 'GET',
+                                'headers': {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                        );
+                    };
+                    console.log(batchRequest);
+                    batchRequest.then(function(jsonBulkMessages){
+                        $scope.$apply(function(){
+                            $scope.emailBulk = jsonBulkMessages.result;
                         });
-                    }
-                    batchRequest.execute(function(response){
-                        console.log(response);
-                    });
+                        console.log($scope.emailBulk);                    });
                 }
             });
-
         };
 
         $scope.isSignedIn = function() {
@@ -230,9 +229,7 @@
                 $scope.getUserInfo();
             });
         };
-
         $scope.signIn();
-
     }]);
 
     /*fields controller*/
@@ -249,7 +246,7 @@
 
         $scope.getMessage = function(id){
             gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.email+'/messages/' + id,
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + id,
                 'method': 'GET',
                 'headers': {
                     'Content-Type': 'application/json'
