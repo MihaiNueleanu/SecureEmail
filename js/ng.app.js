@@ -180,7 +180,7 @@
         };
         $scope.getEmailsBatch = function(userEmail){
             gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults=20',
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults=5',
                 'method': 'GET',
                 'headers': {
                     'Content-Type': 'application/json'
@@ -205,9 +205,16 @@
                     console.log(batchRequest);
                     batchRequest.then(function(jsonBulkMessages){
                         $scope.$apply(function(){
-                            $scope.emailBulk = jsonBulkMessages.result;
+                            jsonBulkMessages.body = undefined;
+                            for(i=0;i< jsonBulkMessages.result.length;i++) {
+                                console.log(i);
+                                $scope.emailsBatch[i] = jsonBulkMessages.result[i].result;
+                            };
+                            console.log($scope.emailsBatch);
                         });
-                        console.log($scope.emailBulk);                    });
+                    },function(reason) {
+                        console.log('Error: ' + reason.result.error.message);
+                    });
                 }
             });
         };

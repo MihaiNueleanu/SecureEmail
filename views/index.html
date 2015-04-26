@@ -4,6 +4,6 @@
        <span class="g-signin" ng-click="signIn()">Sign me up!!!</span>
     </span>
     <div class="email-list">
-        <div class="email-object" ng-repeat="item in emailBulk" data-email-id="{{item.body}}">{{item.body}}</div>
+        <div class="email-object" ng-repeat="item in emailsBatch.employees" data-email-id="{{item.firstName}}">{{item.firstName}}</div>
     </div>
 </div>
