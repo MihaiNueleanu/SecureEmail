@@ -9,7 +9,9 @@
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-social.css">
+
     <link rel="stylesheet" type="text/css" href="css/default.css">
 </head>
 <body ng-controller="mainController">
@@ -23,22 +25,22 @@
 		</div>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="nav navbar-nav" ng-repeat="link in nav.links">
-                <li ng-class="{disabled: link.disabled, active: nav.isSet($index) }">
+                <li ng-class="{disabled: link.disabled, active: nav.isSet($index), hidden: !isSignedIn() }">
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
                 </li> 
 			</ul>
-            <span class="logged-user" ng-show="displayName">{{displayName}} <img src="{{userImage}}" /></span>
-
+			<a ng-click="signOut()" ng-show="isSignedIn()">
+                <span class="logged-user" ng-show="displayName" title="log out">{{displayName}}<img src="{{userImage}}" /></span>
+            </a>
         </div>
     </nav>
+
     <div class="alert alert-success" ng-show="flash.getMessage()" ng-cloak>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span class="sr-only">Error:</span>
         {{flash.getMessage()}}
     </div>
 
-
-    <span ng-show="signedIn == false" id="googleSignIn"><span id="signInButton"></span></span>
     <script>
     (function() {
         var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
@@ -53,8 +55,8 @@
         <p>Loading, please wait.</p>
         <img src="images/loader.gif" />
     </div> --->
-    <div ng-view ng-cloak></div>
 
+    <div ng-view ng-cloak></div>
 
     <!-- loading scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>

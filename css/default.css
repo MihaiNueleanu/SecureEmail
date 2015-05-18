@@ -108,3 +108,7 @@ float:right;
 padding-right:15px;
 line-height:50px;
 }
+
+.hidden {
+    display: none;
+}

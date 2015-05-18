@@ -1,3 +1,5 @@
-<div ng-show="loggedIn">
-
+<div ng-show="isSignedIn()">
+    <div class="email-list" ng-controller="emailsController">
+        <div class="email-object" ng-repeat="item in emailsBatch.employees" data-email-id="{{item.firstName}}">{{item.firstName}}</div>
+    </div>
 </div>

@@ -84,8 +84,9 @@
     }]);
 
     app.factory("GPlusAuthService", function ($q, $window) {
-        var signIn;
-        signIn = function () {
+        var GPlusAuthService = {};
+
+        GPlusAuthService.signIn = function () {
             var defered = $q.defer();
             $window.signinCallback = function (response) {
                 $window.signinCallback = undefined;
@@ -93,6 +94,7 @@
             };
 
             gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
+
             gapi.auth.signIn({
                 callback: "signinCallback",
                 'clientid': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
@@ -102,8 +104,16 @@
             });
             return defered.promise;
         };
-        return { signIn: signIn }
+
+        GPlusAuthService.signOut = function () {
+            gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
+            console.log("signing out from the factory!");
+            gapi.auth.signOut();
+        };
+
+        return GPlusAuthService;
     });
+
     /*configuring data service for bindings*/
     app.factory("flash", function ($rootScope, $timeout) {
         var queue = [];
@@ -178,6 +188,7 @@
                 });
             });
         };
+
         $scope.getEmailsBatch = function(userEmail){
             gapi.client.request({
                 'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults=5',
@@ -233,9 +244,19 @@
         // When callback is received, we need to process authentication.
         $scope.signIn = function() {
             GPlusAuthService.signIn().then(function(response) {
+                $scope.signedIn = true;
                 $scope.getUserInfo();
             });
         };
+
+        $scope.signOut = function() {
+            console.log("trying to signout");
+
+            GPlusAuthService.signOut();
+            $scope.signedIn = false;
+
+        }
+
         $scope.signIn();
     }]);
 
