@@ -2,9 +2,40 @@
  * Created by chancet1982 on 2015-05-18.
  */
 var openpgp = require('openpgp');
-var encryptedPrivateKey = getKey(userID);
+function createKeyPair() {
+    userId = getUserId();
+    passphrase = getPassphrase();
 
-decryptKey()
+    keyPair = openpgp.generateKeyPair({numBits: 2048, userId: userId, passphrase: passphrase});
+
+    privateKey = keyPair.privateKeyArmored;
+    publicKey = keyPair.publicKeyArmored;
+
+    console.log("generated private key:\n\n" + privateKey);
+    console.log("generated public key:\n\n" + publicKey);
+}
+
+/*get current user returns user ID in form of mail*/
+//TODO change userID to work on the real userID
+function getUserId() {
+    return "chancet1982@gmail.com";
+}
+
+/*get current user returns passphrase as string*/
+//TODO getPassphrase
+function getPassphrase(userId) {
+    var userId = userId;
+    return "7890uiOP";
+}
+
+/*get current user returns passphrase as string*/
+//TODO getPublicKey
+function getPublicKey(userId) {
+    var userId = userId;
+    return "7890uiOP";
+}
+
+
 var key = getKey(userID);
 var publicKey = openpgp.key.readArmored(key);
 var privateKey = openpgp.key.readArmored(key).keys[0];
