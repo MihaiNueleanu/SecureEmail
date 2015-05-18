@@ -1,14 +1,16 @@
 <div>
-    <h1>Welcome stranger we dont know who u are cause u are not logged in YET!</h1>
+    <h1>Welcome to the most private mail service EVER(!)</h1>
+    <p class="lead">We believe that user privacy is important, because of that we would never read your mails, heck we would try and ensure no one else could read them too.</p>
 
-    <a class="btn btn-social btn-google" ng-click="signIn()" ng-show="!isSignedIn()">
-        <i class="fa fa-google-plus"></i> Sign in using Google Plus
-    </a>
+    <p>Before we get started we need to be sure you have an account here.</p>
 
-    or
-
-    <a class="btn btn-default" ng-click="createAccount()" ng-show="!isSignedIn()">
-        <i class="fa fa-user"></i> Create Account
-    </a>
-
+    <div ng-show="!isSignedIn()">
+        <a class="btn btn-social btn-google" ng-click="signIn()" >
+            <i class="fa fa-google-plus"></i> Sign in using Google Plus
+        </a>
+        or
+        <a class="btn btn-default" ng-click="createAccount()">
+            <i class="fa fa-user"></i> Create Account
+        </a>
+    </div>
 </div>

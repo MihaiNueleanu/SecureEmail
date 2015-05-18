@@ -249,6 +249,11 @@
             });
         };
 
+        // When callback is received, we need to process authentication.
+        $scope.createAccount = function() {
+
+        };
+
         $scope.signOut = function() {
             console.log("trying to signout");
 
