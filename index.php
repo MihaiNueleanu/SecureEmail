@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>testing SSO + Angular JS</title>
+    <title>Mizaru - Keep it to yourself</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,9 +29,9 @@
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
                 </li> 
 			</ul>
-			<a ng-click="signOut()">
-                <span class="logged-user" ng-show="displayName" title="log out">{{displayName}}<img src="{{userImage}}" /></span>
-            </a>
+			<!-- <a ng-click="signOut()" ng-show="userImage">
+                <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>
+            </a> -->
         </div>
     </nav>
 
@@ -39,6 +39,11 @@
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span class="sr-only">Error:</span>
         {{flash.getMessage()}}
+    </div>
+
+    <div id="loading-spinner" class="alert">
+        <h3>Loading, please wait.</h3>
+        <i class="fa-5x fa fa-refresh fa-spin spinner-color"></i>
     </div>
 
     <script>
@@ -50,27 +55,25 @@
     </script>
     <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
 
-    <!--- Loader Use later
-    <div id="loading-spinner" class="alert">
-        <p>Loading, please wait.</p>
-        <img src="images/loader.gif" />
-    </div> --->
-
     <div ng-view ng-cloak></div>
 
-    <!-- loading scripts -->
+    <!-- loading angular scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-cookies.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-route.js"></script>
 
+    <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
+    <!-- loading pgp -->
+    <script type="text/javascript" src="js/openpgp.js"></script>
+
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>
+
     <!-- angularJS scripts -->
     <script type="text/javascript" src="js/ng.app.js"></script>
-
 
 </body>
 </html>
