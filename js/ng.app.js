@@ -167,6 +167,7 @@
         $scope.userEmail = null;
         $scope.displayName = null;
         $scope.emailBulk = null;
+        $scope.emailsBatch = {};
 
         $scope.getUserInfo = function(){
             gapi.client.load('plus', 'v1').then(function() {
@@ -181,52 +182,9 @@
                         $scope.userImage = response.result.image.url;
                     });
 
-                    $scope.getEmailsBatch($scope.userEmail);
-
                 },function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
-            });
-        };
-
-        $scope.getEmailsBatch = function(userEmail){
-            gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults=5',
-                'method': 'GET',
-                'headers': {
-                    'Content-Type': 'application/json'
-                },
-                'callback': function(jsonResponse, rawResponse) {
-                    console.log(jsonResponse);
-                    $scope.emailList = jsonResponse;
-
-                    var batchRequest = gapi.client.newBatch();
-                    for(i=0;i< $scope.emailList.messages.length;i++){
-                        console.log('added - ' + $scope.emailList.messages[i].id);
-                        batchRequest.add(
-                            gapi.client.request({
-                                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + $scope.emailList.messages[i].id,
-                                'method': 'GET',
-                                'headers': {
-                                    'Content-Type': 'application/json'
-                                }
-                            })
-                        );
-                    };
-                    console.log(batchRequest);
-                    batchRequest.then(function(jsonBulkMessages){
-                        $scope.$apply(function(){
-                            jsonBulkMessages.body = undefined;
-                            for(i=0;i< jsonBulkMessages.result.length;i++) {
-                                console.log(i);
-                                $scope.emailsBatch[i] = jsonBulkMessages.result[i].result;
-                            };
-                            console.log($scope.emailsBatch);
-                        });
-                    },function(reason) {
-                        console.log('Error: ' + reason.result.error.message);
-                    });
-                }
             });
         };
 
@@ -268,7 +226,64 @@
     /*fields controller*/
     app.controller('emailsController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
 
+        $scope.getEmailsBatch = function(userEmail, maxResults){
+            gapi.client.request({
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults='+maxResults,
+                'method': 'GET',
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                'labelIds': 'INBOX',
+                'callback': function(jsonResponse, rawResponse) {
+                    console.log(jsonResponse);
+                    $scope.emailList = jsonResponse;
 
+                    var batchRequest = gapi.client.newBatch();
+                    for(i=0;i< $scope.emailList.messages.length;i++){
+                        console.log('added - ' + $scope.emailList.messages[i].id);
+                        batchRequest.add(
+                            gapi.client.request({
+                                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + $scope.emailList.messages[i].id,
+                                'method': 'GET',
+                                'headers': {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                        );
+                    };
+                    console.log(batchRequest);
+                    batchRequest.then(function(jsonBulkMessages){
+                        console.log(jsonBulkMessages.result);
+                        $.each(jsonBulkMessages.result, function(i, item) {
+                            console.log(item.result.id);
+                            $scope.$apply(function(){
+                                $scope.emailsBatch[i].id = item.result.id;
+
+                            });
+
+                            console.log(item.result.payload.headers);
+                            $.each(item.result.payload.headers, function(i, header) {
+                                if(header.name=="Subject"){
+                                    console.log(header.value);
+                                    $scope.$apply(function(){
+                                        $scope.emailsBatch[i].subject = header.value;
+                                    });
+                                }
+                            });
+
+                            console.log('end payload');
+                        });
+
+                        console.log('batch displayed');
+
+                    },function(reason) {
+                        console.log('Error: ' + reason.result.error.message);
+                    });
+                }
+            });
+        };
+
+        $scope.getEmailsBatch($scope.userEmail, 10);
 
     }]);
 
