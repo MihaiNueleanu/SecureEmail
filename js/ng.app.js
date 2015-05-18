@@ -10,22 +10,28 @@
         "LINKS": [
 	        {
 	            "title": "Inbox",
-	            "name": "inbox",
-	            "url": "#inbox",
+	            "name": "Inbox",
+	            "url": "#emails",
 	            "disabled": false
 	        },
 	        {
 	            "title": "Sent",
 	            "name": "sent",
 	            "url": "#sent",
-	            "disabled": false
+	            "disabled": true
 	        },
 	        {
 	            "title": "Spam",
 	            "name": "spam",
 	            "url": "#spam",
-	            "disabled": false
-	        }
+	            "disabled": true
+	        },
+            {
+                "title": "signup",
+                "name": "signup",
+                "url": "#signup",
+                "disabled": false
+            }
         ]
     });
 
@@ -69,7 +75,11 @@
         }).
         when('/home', {
             templateUrl: 'views/index.html',
-            controller: 'homeController'
+            controller: 'mainController'
+        }).
+        when('/signup', {
+            templateUrl: 'views/signup.html',
+            controller: 'signupController'
         }).
         otherwise({
             redirectTo: '/home'
@@ -85,6 +95,7 @@
 
     app.factory("GPlusAuthService", function ($q, $window) {
         var GPlusAuthService = {};
+        var signedIn = false;
 
         GPlusAuthService.signIn = function () {
             var defered = $q.defer();
@@ -109,6 +120,15 @@
             gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
             console.log("signing out from the factory!");
             gapi.auth.signOut();
+        };
+
+        /*--- getters and setters for the selected dataSelectedId---*/
+        GPlusAuthService.isSignedIn = function () {
+            return signedIn;
+        };
+
+        GPlusAuthService.setSignedIn = function (status) {
+            signedIn = status;
         };
 
         return GPlusAuthService;
@@ -149,21 +169,28 @@
     });
 
     /*navigation (list of links in bottom) + SSO Validation call*/
-    app.controller("NavController", ['CONFIG', '$scope', 'dataFactory', function (CONFIG, $scope, dataFactory) {
+    app.controller("NavController", ['CONFIG', '$scope', 'dataFactory', 'GPlusAuthService', function (CONFIG, $scope, dataFactory, GPlusAuthService) {
         this.links = CONFIG.LINKS;
 
         this.isSet = function (link) {
             return this.link === link;
         };
 
-        this.navClick = function (link) {
-            this.link = link;
+        this.isHidden = function () {
+            if (!GPlusAuthService.isSignedIn()) {
+                console.log("navigation should be hidden");
+                return true;
+            } else {
+                console.log("navigation should be SHOWN");
+            }
         };
+
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
     app.controller("mainController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService','$http', function ($scope, flash, $location, dataFactory, GPlusAuthService,$http) {
-        $scope.signedIn = false;
+        console.log("im in the main controller!");
+        //$scope.signedIn = false;
         $scope.userEmail = null;
         $scope.displayName = null;
         $scope.emailBulk = null;
@@ -188,43 +215,49 @@
             });
         };
 
-        $scope.isSignedIn = function() {
-            return $scope.signedIn;
-        };
-
         // Button "go" (navigate to a single entity page)
         $scope.go = function (path) {
-            $scope.$apply(function() {
-                $location.path(path);
-            });
+            $location.path(path);
         };
 
         // When callback is received, we need to process authentication.
         $scope.signIn = function() {
             GPlusAuthService.signIn().then(function(response) {
-                $scope.signedIn = true;
+                GPlusAuthService.setSignedIn(true);
                 $scope.getUserInfo();
+                //$scope.go("/emails");
             });
-        };
-
-        // When callback is received, we need to process authentication.
-        $scope.createAccount = function() {
-
         };
 
         $scope.signOut = function() {
             console.log("trying to signout");
-
             GPlusAuthService.signOut();
-            $scope.signedIn = false;
-
+            GPlusAuthService.setSignedIn(false);
         }
 
-        $scope.signIn();
+        $scope.$watch(function() { return $location.path(); }, function(){
+            if (!GPlusAuthService.isSignedIn()){
+                $location.path('/home');
+            }
+        });
+
+        // When callback is received, we need to process authentication.
+        $scope.createAccount = function() {
+            $scope.go("/signup");
+        };
+
+        //$scope.signIn();
     }]);
 
-    /*fields controller*/
+    /*singup controller */
+    app.controller("signupController", ['$scope', 'flash', '$location', 'dataFactory', 'GPlusAuthService','$http', function ($scope, flash, $location, dataFactory, GPlusAuthService,$http) {
+        console.log("in the signup controller!");
+    }]);
+
+    /*emails controller*/
     app.controller('emailsController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
+        console.log("in the emails controller for whatever reason!");
+
 
         $scope.getEmailsBatch = function(userEmail, maxResults){
             gapi.client.request({
@@ -287,7 +320,7 @@
 
     }]);
 
-    /*single field controller (new,edit & delete )*/
+    /*single email controller (new,edit & delete )*/
     app.controller('singleEmailController', [ '$scope' , 'flash' , 'dataFactory' , '$http' , '$routeParams' , function ( $scope , flash , dataFactory, $http , $routeParams ) {
         $scope.EMAILID = $routeParams.param1;
         console.log('params are - '+$scope.EMAILID);
@@ -310,16 +343,6 @@
         $scope.getMessage($scope.EMAILID);
 
     }]);
-
-    /*home controller*/
-    app.controller('homeController', ['$scope' , 'flash' , 'dataFactory' , '$http' , '$routeParams' , function ( $scope , flash , dataFactory , $http , $routeParams ) {
-
-        $(document).on('click','.email-list .email-object', function(){
-            $scope.go('/email/'+ $(this).attr('data-email-id'));
-        });
-
-    }]);
-
 
     /*initialize bootstrap*/
     angular.element(document).ready(function () {

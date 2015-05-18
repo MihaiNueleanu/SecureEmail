@@ -1,16 +1,48 @@
-<div>
+<div class="jumbotron" ng-controller="mainController">
     <h1>Welcome to the most private mail service EVER(!)</h1>
     <p class="lead">We believe that user privacy is important, because of that we would never read your mails, heck we would try and ensure no one else could read them too.</p>
 
     <p>Before we get started we need to be sure you have an account here.</p>
-
     <div ng-show="!isSignedIn()">
         <a class="btn btn-social btn-google" ng-click="signIn()" >
             <i class="fa fa-google-plus"></i> Sign in using Google Plus
         </a>
         or
         <a class="btn btn-default" ng-click="createAccount()">
-            <i class="fa fa-user"></i> Create Account
+            <i class="fa fa-user"></i> Signup
         </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+            <img src="..." alt="...">
+            <div class="caption">
+                <h3>Thumbnail label</h3>
+                <p>...</p>
+                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+            <img src="..." alt="...">
+            <div class="caption">
+                <h3>Thumbnail label</h3>
+                <p>...</p>
+                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+            <img src="..." alt="...">
+            <div class="caption">
+                <h3>Thumbnail label</h3>
+                <p>...</p>
+                <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+            </div>
+        </div>
     </div>
 </div>

@@ -24,12 +24,12 @@
 			<a href="#" class="navbar-brand"><img src="images/icon.png"/>Mizaru<span class="light"></span></a>
 		</div>
 		<div class="collapse navbar-collapse" id="navbar">
-			<ul class="nav navbar-nav" ng-repeat="link in nav.links">
-                <li ng-class="{disabled: link.disabled, active: nav.isSet($index), hidden: !isSignedIn() }">
+			<ul class="nav navbar-nav" ng-repeat="link in nav.links" ng-class="{hidden:nav.isHidden()}">
+                <li ng-class="{disabled: link.disabled, active: nav.isSet($index)}">
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
                 </li> 
 			</ul>
-			<a ng-click="signOut()" ng-show="isSignedIn()">
+			<a ng-click="signOut()">
                 <span class="logged-user" ng-show="displayName" title="log out">{{displayName}}<img src="{{userImage}}" /></span>
             </a>
         </div>
