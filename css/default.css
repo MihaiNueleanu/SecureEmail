@@ -122,10 +122,23 @@ line-height:50px;
 }
 
 .jumbotron {
-    padding-left:15px;
-    padding-right:15px;
+    padding: 30px 15px;
     background-color:transparent;
     text-align: center;
+    background-image: url("../images/main-graphics.svg");
+    background-position: 50% 100%;
+    background-repeat: no-repeat;
+    height: 450px;
+}
+
+.jumbotron .h1,
+.jumbotron h1,
+.jumbotron p {
+    text-shadow: 0 1px 3px rgba(255,255,255,0.6);
+}
+
+.jumbotron .row {
+    margin-top:150px;
 }
 
 .g-user {
@@ -135,6 +148,8 @@ line-height:50px;
 .thumbnail {
     border: none;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    height: 350px;
 }
 
 .thumbnail img {
@@ -142,11 +157,11 @@ line-height:50px;
     max-width: 70%;
     height: auto;
     max-height: 128px;
-    background-color: #005983;
+    background-color: #7ababa;
     border-radius: 50%;
-
+    margin-top:20px;
 }
 
 .spinner-color {
-    color: #005983;
+    color: #7ababa;
 }
