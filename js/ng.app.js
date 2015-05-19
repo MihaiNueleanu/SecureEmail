@@ -5,10 +5,9 @@
     /* testing for a userEmail cookie and if does not exist redirecting to main */
     app.run(function($cookieStore , $location) {
         if ($cookieStore.get('userEmail') === 'true') {
-            console.log("user should be signed in already");
-        }
-        else {
-            console.log("user is not signed in");
+            console.log("RUN(page load) test - user is signed in");
+        } else {
+            console.log("RUN(page load) test - user is not signed in - redirecting to home");
             $location.path( "/home" );
         }
     });
@@ -224,7 +223,7 @@
             $location.path(path);
         };
 
-        // When callback is received, we need to process authentication.
+        // sign in (using factory)
         $scope.signIn = function() {
             GoogleAPI.signIn().then(function(response) {
                 gapi.client.load('plus', 'v1').then(function() {
@@ -254,6 +253,7 @@
             });
         };
 
+        // sign out (using factory)
         $scope.signOut = function() {
             console.log("trying to signout");
             GoogleAPI.signOut();
@@ -264,29 +264,36 @@
             $cookieStore.remove('signedIn');
         };
 
-        // When callback is received, we need to process authentication.
-        $scope.createAccount = function() {
-            $scope.go("/signup");
+        // sign in validation
+        $scope.validateSignIn = function() {
+            if ($cookieStore.get('signedIn') === 'true') {
+                console.log("user is signed in");
+            } else {
+                console.log("user is not signed in");
+            }
         };
-
-        //$scope.signIn();
     }]);
 
-    /*singup controller */
+    /*singup(FORM) controller */
     app.controller("signupController", ['$scope', 'flash', '$location', '$cookieStore', 'GoogleAPI', function ($scope, flash, $location, $cookieStore, GoogleAPI) {
         console.log("in the signup controller!");
 
         $scope.passphrase;
+        $scope.hashedPassphrase;
+
+        $scope.$watch('passphrase' ,function() {
+            $scope.hashedPassphrase = md5.createHash($scope.passphrase || '');
+        });
 
         $scope.validateForm = function() {
             console.log("validating form");
             $scope.userId = $cookieStore.get('userEmail');
-            console.log("going to try and create a key pair for user: " + $scope.userId + " using the passphrase: " + $scope.passphrase );
+            console.log("going to try and create a key pair for scope.userId: " + $scope.userId + " and scope.hashedPassphrase: " + $scope.hashedPassphrase );
 
             var options = {
                 numBits: 2048,
-                userId: 'Jon Smith <jon.smith@example.org>',
-                passphrase: 'super long and hard to guess secret'
+                userId: $scope.userId,
+                passphrase: $scope.hashedPassphrase
             };
 
             openpgp.generateKeyPair(options).then(function(keypair) {

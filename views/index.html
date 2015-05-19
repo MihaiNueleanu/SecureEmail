@@ -36,21 +36,22 @@
     <p>Before we get started we need to be sure you have an account here.</p>
     <p class="alert-success">Signing up takes only 3 simple steps.</p>
 
-    <div>
+    <div ng-hide="validateSignIn()">
         <p>Step 1. Sign in using your current mail provider (currently supporting only Gmail)</p>
         <a class="btn btn-lg btn-social btn-google" ng-click="signIn()" >
             <i class="fa fa-google-plus"></i> Sign in using Google Plus
         </a>
     </div>
-    <div >
+    <div ng-show="validateSignIn()">
         <p>Step 2. Select a passphrase, this will be used to identify you in our system</p>
 
         <div ng-controller="signupController">
-            <form novalidate id="create-account-form">
+            <form id="create-account-form" novalidate>
                 <div class="form-group has-success">
+
                     {{passphrase}}
                     <label class="control-label" for="inputSuccess1">Select a pass phrase</label>
-                    <input type="text" class="form-control" required id="passphrase" ng-model="passphrase">
+                    <input type="text" class="form-control" id="passphrase" ng-model="passphrase" ng-minlength="8" required>
                     <input type="submit" class="btn btn-default" ng-click="validateForm()" value="Submit" />
                 </div>
             </form>
