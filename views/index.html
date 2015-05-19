@@ -32,34 +32,36 @@
         </div>
     </div>
 </div>
-<div>
+<div class="signup">
     <p>Before we get started we need to be sure you have an account here.</p>
-    <p class="alert-success">Signing up takes only 3 simple steps.</p>
+    <p class="label label-info">Signing up takes only 3 simple steps.</p>
 
-    <div>
-        <p>Step 1. Sign in using your current mail provider (currently supporting only Gmail)</p>
+    <div class="step step-1">
+        <h3><span class="label label-default">Step 1.</span> Sign in using your current mail provider (currently supporting only Gmail)</h3>
         <a class="btn btn-lg btn-social btn-google" ng-click="signIn()" >
             <i class="fa fa-google-plus"></i> Sign in using Google Plus
         </a>
     </div>
-    <div>
-        <p>Step 2. Select a passphrase, this will be used to identify you in our system</p>
 
+    <div class="step step-2">
+        <h3><span class="label label-default">Step 2.</span> Select a passphrase, this will be used to identify you in our system</h3>
+        {{passphrase}}
         <div ng-controller="signupController">
             <form id="create-account-form" novalidate>
-                <div class="form-group has-success">
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control" placeholder="Select a pass phrase" class="form-control" id="passphrase" ng-model="passphrase" ng-minlength="8" required>
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="button" ng-click="validateForm()">Go!</button>
+                    </span>
 
-                    {{passphrase}}
-                    <label class="control-label" for="inputSuccess1">Select a pass phrase</label>
-                    <input type="text" class="form-control" id="passphrase" ng-model="passphrase" ng-minlength="8" required>
-                    <input type="submit" class="btn btn-default" ng-click="validateForm()" value="Submit" />
                 </div>
             </form>
         </div>
+    </div>
 
-    <div>
-        <p>Step 3. youre all set!</p>
-        <p>let us redirect you to your mail account.</p>
+    <div class="step step-3">
+        <h3><span class="label label-default">Step 3.</span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> youre all set!</h3>
+        <p class="label label-success">let us redirect you to your mail account.</p>
     </div>
 </div>
 

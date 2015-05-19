@@ -112,12 +112,12 @@ line-height:50px;
     display: none;
 }
 
-.css-form input.ng-invalid.ng-touched {
-    background-color: #FA787E;
+input.ng-invalid.ng-touched {
+    border-color: #d9534f;
 }
 
-.css-form input.ng-valid.ng-touched {
-    background-color: #78FA89;
+input.ng-valid.ng-touched {
+    border-color: #5cb85c;
 }
 
 .jumbotron {
@@ -127,7 +127,8 @@ line-height:50px;
     background-position: 50% 100%;
     background-repeat: no-repeat;
     height: 450px;
-    background-color: #6ea7a7;
+    background-color: #7ababa;
+    padding: 48px 15px;
 }
 
 .jumbotron .h1,
@@ -148,8 +149,19 @@ line-height:50px;
 .thumbnail {
     border: none;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
     height: 350px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+div.col-sm-6.col-md-4:nth-of-type(1)> div {
+    border-top:solid 30px #d9534f;
+}
+div.col-sm-6.col-md-4:nth-of-type(2)> div {
+    border-top:solid 30px #FBD040;
+}
+div.col-sm-6.col-md-4:nth-of-type(3)> div {
+    border-top:solid 30px #5cb85c;
 }
 
 .thumbnail .caption p{
@@ -169,4 +181,35 @@ line-height:50px;
 
 .spinner-color {
     color: #7ababa;
+}
+
+.signup  {padding-left: 15px; padding-right: 15px;text-align: center;}
+
+.signup #create-account-form {
+    width: 60%;
+    margin-left: 20%;
+}
+
+.signup .step {
+    background-color: #eeeeee;
+    padding: 15px;
+    margin-top: 15px;
+    position: relative;
+}
+
+.signup .step:last-of-type {
+    margin-bottom: 15px;
+}
+
+.signup .step .label.label-default {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+}
+
+.glyphicon.glyphicon-ok {
+    padding: 8px;
+    border-radius: 50%;
+    background: #5cb85c;
+    color: #fff;
 }
