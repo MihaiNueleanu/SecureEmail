@@ -36,13 +36,13 @@
     <p>Before we get started we need to be sure you have an account here.</p>
     <p class="alert-success">Signing up takes only 3 simple steps.</p>
 
-    <div ng-hide="validateSignIn()">
+    <div>
         <p>Step 1. Sign in using your current mail provider (currently supporting only Gmail)</p>
         <a class="btn btn-lg btn-social btn-google" ng-click="signIn()" >
             <i class="fa fa-google-plus"></i> Sign in using Google Plus
         </a>
     </div>
-    <div ng-show="validateSignIn()">
+    <div>
         <p>Step 2. Select a passphrase, this will be used to identify you in our system</p>
 
         <div ng-controller="signupController">

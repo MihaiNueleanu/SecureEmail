@@ -2,14 +2,17 @@
     /*creating app (currently adding coockies and route)*/
     var app = angular.module('app', ['ngCookies', 'ngRoute']);
 
-    /* testing for a userEmail cookie and if does not exist redirecting to main */
-    app.run(function($cookieStore , $location) {
-        if ($cookieStore.get('userEmail') === 'true') {
-            console.log("RUN(page load) test - user is signed in");
-        } else {
-            console.log("RUN(page load) test - user is not signed in - redirecting to home");
-            $location.path( "/home" );
-        }
+    /* whenever change page or load ensuring user is logged in if not redirecting to home */
+    app.run(function($rootScope, $location) {
+        $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+            if ($rootScope.loggedInUser == null) {
+                // no logged user, redirect to /login
+                console.log("RUN(page load) test - user is not signed in - redirecting to home");
+                $location.path("/home");
+            } else {
+                console.log("RUN(page load) test - user is signed in");
+            }
+        });
     });
 
     /* testing for a userEmail cookie and if does not exist redirecting to main */
@@ -282,7 +285,8 @@
         $scope.hashedPassphrase;
 
         $scope.$watch('passphrase' ,function() {
-            $scope.hashedPassphrase = md5.createHash($scope.passphrase || '');
+            //$scope.hashedPassphrase = md5.createHash($scope.passphrase || '');
+            $scope.hashedPassphrase = $scope.passphrase;
         });
 
         $scope.validateForm = function() {

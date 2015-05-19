@@ -1,5 +1,4 @@
 body {
-	margin-top: 75px;
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -122,19 +121,20 @@ line-height:50px;
 }
 
 .jumbotron {
-    padding: 30px 15px;
     background-color:transparent;
     text-align: center;
     background-image: url("../images/main-graphics.svg");
     background-position: 50% 100%;
     background-repeat: no-repeat;
     height: 450px;
+    background-color: #6ea7a7;
 }
 
 .jumbotron .h1,
 .jumbotron h1,
 .jumbotron p {
-    text-shadow: 0 1px 3px rgba(255,255,255,0.6);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    color: #ffffff;
 }
 
 .jumbotron .row {
@@ -150,6 +150,11 @@ line-height:50px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     height: 350px;
+}
+
+.thumbnail .caption p{
+    text-shadow:none;
+    color: #000000;
 }
 
 .thumbnail img {
