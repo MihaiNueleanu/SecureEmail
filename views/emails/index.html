@@ -1,8 +1,8 @@
-<div class="email-list" >
+<div class="email-list">
     <ul class="list-group" >
         <li ng-repeat="item in emailsObject" class="list-group-item" data-email-id="{{item.mailId}}">
-            <span class="badge">{{item.date}} // From: {{item.from}} // To: {{item.to}}</span>
-            <a href="#/email/{{item.mailId}}" class="mail">{{item.subject}}</a>
+            <span class="badge">{{item.date}}</span>
+            <a title="From: {{item.from}} // To: {{item.to}}" href="#/email/{{item.mailId}}" class="mail">{{item.subject}}</a>
         </li>
     </ul>
 </div>

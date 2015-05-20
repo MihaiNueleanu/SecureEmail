@@ -43,11 +43,11 @@
         <h3><span class="label label-default">Step 2.</span> Select a passphrase, this will be used to identify you in our system</h3>
         {{passphrase}}
         <div ng-controller="signupController">
-            <form id="create-account-form" novalidate>
+            <form id="create-account-form" name="form" novalidate >
                 <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="Select a pass phrase" class="form-control" id="passphrase" ng-model="passphrase" ng-minlength="8" required>
+                    <input type="text" class="form-control" placeholder="Select a pass phrase" id="passphrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
                     <span class="input-group-btn">
-                        <button class="btn btn-success" type="button" ng-click="validateForm()">Go!</button>
+                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="validateForm()">Create account</button>
                     </span>
 
                 </div>

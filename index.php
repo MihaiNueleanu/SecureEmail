@@ -58,8 +58,9 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-    <!-- loading pgp -->
+    <!-- loading pgp + crypto hash(SHA-1) -->
     <script type="text/javascript" src="js/openpgp.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
 
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>

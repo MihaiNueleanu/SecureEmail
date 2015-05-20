@@ -1,4 +1,5 @@
 (function () {
+
     /*creating app (currently adding coockies and route)*/
     var app = angular.module('app', ['ngCookies', 'ngRoute', 'ngSanitize',  'directive.g+signin']);
 
@@ -207,22 +208,25 @@
         console.log("in the signup controller!");
 
         $scope.passphrase;
-        $scope.hashedPassphrase;
 
         $scope.$watch('passphrase' ,function() {
-            //$scope.hashedPassphrase = md5.createHash($scope.passphrase || '');
-            $scope.hashedPassphrase = $scope.passphrase;
+            //$scope.hashedPassphrase = $scope.passphrase;
         });
 
         $scope.validateForm = function() {
             console.log("validating form");
-            $scope.userId = $rootScope.userEmail;
-            console.log("going to try and create a key pair for scope.userId: " + $scope.userId + " and scope.hashedPassphrase: " + $scope.hashedPassphrase );
+            var userId = $rootScope.userEmail;
+            var salt = "notSoRandomSalt" //TODO should be generated on server.
+            var hash = CryptoJS.SHA1($scope.passphrase + salt);
+            console.log("Hashed Passphrase:");
+            console.log(hash);
+
+            console.log("going to try and create a key pair for scope.userId: " + userId + " and scope.hashedPassphrase: " + hash );
 
             var options = {
                 numBits: 2048,
-                userId: $scope.userId,
-                passphrase: $scope.hashedPassphrase
+                userId: userId,
+                passphrase: hash
             };
 
             openpgp.generateKeyPair(options).then(function(keypair) {
@@ -246,8 +250,11 @@
 
         var extractField = function(json, fieldName) {
             return json.result.payload.headers.filter(function(header) {
+                if (header.name === fieldName) {
+                    console.log("Value of: " + header.name + "  is: " + header.value);
+                }
                 return header.name === fieldName;
-            })[0].value;
+            })[0].value; //TODO check for undefiend
         };
 
         $scope.emailsObject = [{}];
@@ -267,7 +274,7 @@
 
                     var batchRequest = gapi.client.newBatch();
                     for(i=0;i< $scope.emailList.messages.length;i++){
-                        console.log('added - ' + $scope.emailList.messages[i].id + "messageCOUNTER: " + i);
+                        console.log("ID: " + $scope.emailList.messages[i].id + " messageCOUNTER: " + i);
                         batchRequest.add(
                             gapi.client.request({
                                 'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + $scope.emailList.messages[i].id,
@@ -278,36 +285,28 @@
                             })
                         );
                     };
-                    console.log(batchRequest);
+
+                    //console.log(batchRequest);
                     batchRequest.then(function(jsonBulkMessages){
                         console.log(jsonBulkMessages.result);
 
-                        counter = 1;
-
                         $.each(jsonBulkMessages.result, function(i, item) {
 
-                            console.log(item.result.payload.headers);
-
-                            if (item.result.payload.headers != undefined) {
-                                console.log("COUNTER:" + counter)
-                                from = extractField(item, "From");
-                                to = extractField(item, "To");
-                                subject = extractField(item, "Subject");
-                                date = extractField(item, "Date");
-                            }
+                            from = extractField(item, "From");
+                            to = extractField(item, "To");
+                            subject = extractField(item, "Subject");
+                            date = extractField(item, "Date");
 
                             $scope.$apply(function(){
-                                console.log("mailId: " + item.result.id + " subject: " + subject + " date: " + date + " from: " + from +" to: " +to);
+                                //console.log("mailId: " + item.result.id + " subject: " + subject + " date: " + date + " from: " + from +" to: " +to);
                                 $scope.emailsObject.push({"mailId":item.result.id,"subject":subject , "date":date, "from":from,"to":to});
                             });
 
-                            counter++;;
-                            //$scope.emailsObject.shift()
                         });
 
                         console.log('batch displayed');
-                        console.log($scope.emailsObject);
-
+                        //console.log($scope.emailsObject);
+                        //$scope.emailsObject.shift()
 
                     },function(reason) {
                         console.log('Error: ' + reason.result.error.message);
