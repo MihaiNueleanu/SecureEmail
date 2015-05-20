@@ -166,7 +166,7 @@
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", [ '$scope', 'flash', '$location', '$cookieStore', function ($scope, flash, $location, $cookieStore ) {
+    app.controller("mainController", [ '$scope', 'flash', '$location', '$rootScope', function ($scope, flash, $location, $rootScope ) {
         $scope.userEmail;
         $scope.displayName;
         $scope.userImage;
@@ -187,6 +187,8 @@
                         $scope.userEmail = response.result.emails[0].value;
                         $scope.displayName = response.result.displayName;
                         $scope.userImage = response.result.image.url;
+
+                        $rootScope.userEmail = $scope.userEmail
                     });
                     $location.path("/emails");
                 },function(reason) {
@@ -201,7 +203,7 @@
     }]);
 
     /*singup(FORM) controller */
-    app.controller("signupController", ['$scope', 'flash', '$location', '$cookieStore', function ($scope, flash, $location, $cookieStore) {
+    app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', function ($scope, flash, $location, $rootScope) {
         console.log("in the signup controller!");
 
         $scope.passphrase;
@@ -214,7 +216,7 @@
 
         $scope.validateForm = function() {
             console.log("validating form");
-            $scope.userId = $cookieStore.get('userEmail');
+            $scope.userId = $rootScope.userEmail;
             console.log("going to try and create a key pair for scope.userId: " + $scope.userId + " and scope.hashedPassphrase: " + $scope.hashedPassphrase );
 
             var options = {
