@@ -15,7 +15,7 @@
         $rootScope.$on('event:google-plus-signin-success', function (event,authResult) {
             console.log("RUN(page load) test - user is signed in");
             $rootScope.signedIn = true;
-            $location.path("/emails");
+            //$location.path("/emails");
         });
 
         $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
@@ -270,6 +270,8 @@
                     batchRequest.then(function(jsonBulkMessages){
                         console.log(jsonBulkMessages.result);
                         $.each(jsonBulkMessages.result, function(i, item) {
+
+                            var emailHeaders = {};
                             console.log(item.result.id);
 
                             console.log(item.result.payload.headers);
@@ -277,7 +279,7 @@
                                 if(header.name=="Subject"){
                                     console.log(header.value);
                                     $scope.$apply(function(){
-                                        $scope.emailsObject.push({"mailId":item.result.id,"subject":header.value});
+                                        $scope.emailsObject.push({"mailId":item.result.id,"subject":header.value,"":""});
                                     });
                                 }
                             });

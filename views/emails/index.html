@@ -1,6 +1,9 @@
 
     <div class="email-list" ng-controller="emailsController">
         <ul class="list-group" >
-            <li ng-repeat="item in emailsObject" class="list-group-item" data-email-id="{{item.mailId}}">{{item.subject}}</li>
+            <li ng-repeat="item in emailsObject" class="list-group-item" data-email-id="{{item.mailId}}">
+                <span class="badge">14</span>
+                {{item.subject}}
+            </li>
         </ul>
     </div>
