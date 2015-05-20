@@ -1,3 +1,7 @@
-<div>
-    {{from}}
+<div class="single-email">
+<h1>we are trying to view a mail man...</h1>
+    <p><span class="badge">from</span> {{from}}</p>
+    <p><span class="badge">to</span>{{to}}</p>
+    <h1><span>Subject: </span> {{subject}}</h1>
+    <div ng-bind-html="messageBody"></div>
 </div>

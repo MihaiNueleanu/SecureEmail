@@ -183,7 +183,7 @@ div.col-sm-6.col-md-4:nth-of-type(3)> div {
     color: #7ababa;
 }
 
-.signup  {padding-left: 15px; padding-right: 15px;text-align: center;}
+.signup  {padding-left: 15px; padding-right: 15px;text-align: center;clear: both;}
 
 .signup #create-account-form {
     width: 60%;
@@ -213,3 +213,5 @@ div.col-sm-6.col-md-4:nth-of-type(3)> div {
     background: #5cb85c;
     color: #fff;
 }
+.single-email,
+.email-list {margin-top: 48px;}

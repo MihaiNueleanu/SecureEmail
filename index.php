@@ -52,7 +52,7 @@
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-cookies.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-route.js"></script>
-
+    <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-sanitize.js"></script>
 
     <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>

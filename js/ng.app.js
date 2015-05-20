@@ -1,6 +1,6 @@
 (function () {
     /*creating app (currently adding coockies and route)*/
-    var app = angular.module('app', ['ngCookies', 'ngRoute', 'directive.g+signin']);
+    var app = angular.module('app', ['ngCookies', 'ngRoute', 'ngSanitize',  'directive.g+signin']);
 
     /* whenever change page or load ensuring user is logged in if not redirecting to home */
     app.run(function($rootScope, $location) {
@@ -13,13 +13,15 @@
         });
 
         $rootScope.$on('event:google-plus-signin-success', function (event,authResult) {
-            console.log("RUN(page load) test - user is signed in");
+            console.log("user is signed in");
+            $('#signup .step.step-1').addClass('hidden');
             $rootScope.signedIn = true;
-            //$location.path("/emails");
+
         });
 
         $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
-            console.log("RUN(page load) test - user is not signed in - redirecting to home");
+            console.log("user is not signed in - redirecting to home");
+            $('#signup .step.step-1').removeClass('hidden');
             $rootScope.signedIn = false;
             $location.path("/home");
         });
@@ -93,7 +95,7 @@
             templateUrl: 'views/emails/index.html',
             controller: 'emailsController'
         }).
-        when('/email/:param1', {
+        when('/email/:param', {
             templateUrl: 'views/email/index.html',
             controller: 'singleEmailController'
         }).
@@ -186,6 +188,7 @@
                         $scope.displayName = response.result.displayName;
                         $scope.userImage = response.result.image.url;
                     });
+                    $location.path("/emails");
                 },function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
@@ -238,6 +241,13 @@
 
     /*emails controller*/
     app.controller('emailsController', ['$scope', 'flash', function ($scope, flash) {
+
+        var extractField = function(json, fieldName) {
+            return json.result.payload.headers.filter(function(header) {
+                return header.name === fieldName;
+            })[0].value;
+        };
+
         $scope.emailsObject = [{}];
         console.log("in the emails controller for whatever reason!");
 
@@ -255,7 +265,7 @@
 
                     var batchRequest = gapi.client.newBatch();
                     for(i=0;i< $scope.emailList.messages.length;i++){
-                        console.log('added - ' + $scope.emailList.messages[i].id);
+                        console.log('added - ' + $scope.emailList.messages[i].id + "messageCOUNTER: " + i);
                         batchRequest.add(
                             gapi.client.request({
                                 'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/' + $scope.emailList.messages[i].id,
@@ -269,26 +279,33 @@
                     console.log(batchRequest);
                     batchRequest.then(function(jsonBulkMessages){
                         console.log(jsonBulkMessages.result);
+
+                        counter = 1;
+
                         $.each(jsonBulkMessages.result, function(i, item) {
 
-                            var emailHeaders = {};
-                            console.log(item.result.id);
-
                             console.log(item.result.payload.headers);
-                            $.each(item.result.payload.headers, function(i, header) {
-                                if(header.name=="Subject"){
-                                    console.log(header.value);
-                                    $scope.$apply(function(){
-                                        $scope.emailsObject.push({"mailId":item.result.id,"subject":header.value,"":""});
-                                    });
-                                }
+
+                            if (item.result.payload.headers != undefined) {
+                                console.log("COUNTER:" + counter)
+                                from = extractField(item, "From");
+                                to = extractField(item, "To");
+                                subject = extractField(item, "Subject");
+                                date = extractField(item, "Date");
+                            }
+
+                            $scope.$apply(function(){
+                                console.log("mailId: " + item.result.id + " subject: " + subject + " date: " + date + " from: " + from +" to: " +to);
+                                $scope.emailsObject.push({"mailId":item.result.id,"subject":subject , "date":date, "from":from,"to":to});
                             });
 
-                            console.log('end payload');
+                            counter++;;
+                            //$scope.emailsObject.shift()
                         });
 
                         console.log('batch displayed');
                         console.log($scope.emailsObject);
+
 
                     },function(reason) {
                         console.log('Error: ' + reason.result.error.message);
@@ -302,9 +319,15 @@
     }]);
 
     /*single email controller (new,edit & delete )*/
-    app.controller('singleEmailController', [ '$scope' , 'flash' , 'dataFactory' , '$http' , '$routeParams' , function ( $scope , flash , dataFactory, $http , $routeParams ) {
-        $scope.EMAILID = $routeParams.param1;
-        console.log('params are - '+$scope.EMAILID);
+    app.controller('singleEmailController', [ '$scope' , 'flash' , '$http' , '$routeParams' , function ( $scope, flash, $http, $routeParams ) {
+        $scope.param = $routeParams.param;
+        console.log('params are - '+$scope.param);
+
+        var extractField = function(json, fieldName) {
+            return json.payload.headers.filter(function(header) {
+                return header.name === fieldName;
+            })[0].value;
+        };
 
         $scope.getMessage = function(id){
             gapi.client.request({
@@ -315,13 +338,23 @@
                 },
                 'callback': function(jsonResponse, rawResponse) {
                     console.log(jsonResponse);
-                    $scope.$apply(function(){
-                        $scope.from = jsonResponse.payload.headers[12].value;
+
+                    var part = jsonResponse.payload.parts.filter(function(part) {
+                        console.log(part);
+                        return part.mimeType == 'text/html';
                     });
+
+                    $scope.$apply(function(){
+                        $scope.from = extractField(jsonResponse, "From");
+                        $scope.to = extractField(jsonResponse, "To");
+                        $scope.subject = extractField(jsonResponse, "Subject");
+                        $scope.messageBody = atob(part[0].body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                    });
+
                 }
             });
         }
-        $scope.getMessage($scope.EMAILID);
+        $scope.getMessage($scope.param);
 
     }]);
 
