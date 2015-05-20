@@ -1,17 +1,27 @@
 (function () {
     /*creating app (currently adding coockies and route)*/
-    var app = angular.module('app', ['ngCookies', 'ngRoute']);
+    var app = angular.module('app', ['ngCookies', 'ngRoute', 'directive.g+signin']);
 
     /* whenever change page or load ensuring user is logged in if not redirecting to home */
     app.run(function($rootScope, $location) {
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-            if ($rootScope.loggedInUser == null) {
-                // no logged user, redirect to /login
-                console.log("RUN(page load) test - user is not signed in - redirecting to home");
+            if ($rootScope.signedIn) {
+
+            }else{
                 $location.path("/home");
-            } else {
-                console.log("RUN(page load) test - user is signed in");
             }
+        });
+
+        $rootScope.$on('event:google-plus-signin-success', function (event,authResult) {
+            console.log("RUN(page load) test - user is signed in");
+            $rootScope.signedIn = true;
+            $location.path("/emails");
+        });
+
+        $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
+            console.log("RUN(page load) test - user is not signed in - redirecting to home");
+            $rootScope.signedIn = false;
+            $location.path("/home");
         });
     });
 
@@ -100,62 +110,6 @@
         });
     }]);
 
-    /*Google API service*/
-    app.factory("GoogleAPI", function ($q, $window) {
-        var GoogleAPI = {};
-        var userEmail;
-        var displayName;
-        var userImage;
-
-        /*--- getters and setters for the selected dataSelectedId---*/
-        GoogleAPI.getUserEmail = function () {
-            return userEmail;
-        };
-        GoogleAPI.setUserEmail = function (mail) {
-            userEmail = mail;
-        };
-        GoogleAPI.getDisplayName = function () {
-            return displayName;
-        };
-        GoogleAPI.setDisplayName = function (name) {
-            displayName = name;
-        };
-        GoogleAPI.getUserImage = function () {
-            return userImage;
-        };
-        GoogleAPI.setUserImage = function (url) {
-            userImage = url;
-        };
-
-        GoogleAPI.signIn = function () {
-            console.log("Factory sign in");
-            var defered = $q.defer();
-            $window.signinCallback = function (response) {
-                $window.signinCallback = undefined;
-                defered.resolve(response);
-            };
-
-            gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
-
-            gapi.auth.signIn({
-                callback: "signinCallback",
-                'clientid': '751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com',
-                'requestvisibleactions': 'http://schemas.google.com/AddActivity',
-                'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email https://mail.google.com/',
-                'cookiepolicy': 'single_host_origin'
-            });
-            return defered.promise;
-        };
-
-        GoogleAPI.signOut = function () {
-            console.log("Factory sign out");
-            gapi.client.setApiKey('AIzaSyA6TsGjSNES_Mk_yn07No8NMy5Z74nJo3o');
-            gapi.auth.signOut();
-        };
-
-        return GoogleAPI;
-    });
-
     /*configuring data service for bindings*/
     app.factory("flash", function ($rootScope, $timeout) {
         var queue = [];
@@ -191,7 +145,7 @@
     });
 
     /*navigation (list of links in bottom) + SSO Validation call*/
-    app.controller("NavController", ['CONFIG', '$scope', '$cookieStore', 'GoogleAPI', function (CONFIG, $scope, $cookieStore, GoogleAPI) {
+    app.controller("NavController", ['CONFIG', '$scope', '$cookieStore', function (CONFIG, $scope, $cookieStore) {
         this.links = CONFIG.LINKS;
 
         this.isSet = function (link) {
@@ -200,23 +154,17 @@
 
         this.navClick = function (link) {
             this.link = link;
-            this.init();
-            dataFactory.setSelectedId("");
         };
 
-        /*this.isHidden = function () {
-            if (!GoogleAPI.isSignedIn()) {
-                console.log("navigation should be hidden");
-                return true;
-            } else {
-                console.log("navigation should be SHOWN");
-            }
-        };*/
+        $scope.signOut = function () {
+            console.log("sign out using NAV");
+            gapi.auth.signOut();
+        };
 
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", ['$scope', 'flash', '$location', '$cookieStore', 'GoogleAPI', function ($scope, flash, $location, $cookieStore, GoogleAPI ) {
+    app.controller("mainController", [ '$scope', 'flash', '$location', '$cookieStore', function ($scope, flash, $location, $cookieStore ) {
         $scope.userEmail;
         $scope.displayName;
         $scope.userImage;
@@ -226,59 +174,31 @@
             $location.path(path);
         };
 
-        // sign in (using factory)
-        $scope.signIn = function() {
-            GoogleAPI.signIn().then(function(response) {
-                gapi.client.load('plus', 'v1').then(function() {
-                    gapi.client.plus.people.get({'userId': 'me'}).then(function(response) {
-                        console.log("getting user details now in factory!");
-                        console.log(response.result);
-
-                        GoogleAPI.setUserEmail(response.result.emails[0].value);
-                        GoogleAPI.setDisplayName(response.result.displayName);
-                        GoogleAPI.setUserImage(response.result.image.url);
-
-                        $cookieStore.put('userEmail', GoogleAPI.getUserEmail());
-                        $cookieStore.put('displayName',GoogleAPI.getDisplayName());
-                        $cookieStore.put('userImage', GoogleAPI.getUserImage);
-                        $cookieStore.put('signedIn', 'true');
-
-                        console.log("Got some information out now....");
-
-                        //$scope.go("/emails");
-
-                    },function(reason) {
-                        console.log('Error: ' + reason.result.error.message);
-                    });
+        $scope.getUserInfo = function(){
+            gapi.client.load('plus', 'v1').then(function() {
+                var request = gapi.client.plus.people.get({
+                    'userId': 'me'
                 });
-
-
+                request.then(function(response) {
+                    console.log(response.result);
+                    $scope.$apply(function(){
+                        $scope.userEmail = response.result.emails[0].value;
+                        $scope.displayName = response.result.displayName;
+                        $scope.userImage = response.result.image.url;
+                    });
+                },function(reason) {
+                    console.log('Error: ' + reason.result.error.message);
+                });
             });
         };
 
-        // sign out (using factory)
-        $scope.signOut = function() {
-            console.log("trying to signout");
-            GoogleAPI.signOut();
-
-            $cookieStore.remove('userEmail');
-            $cookieStore.remove('displayName');
-            $cookieStore.remove('userImage');
-            $cookieStore.remove('signedIn');
-        };
-
-        // sign in validation
-        $scope.validateSignIn = function() {
-            if ($cookieStore.get('signedIn') === 'true') {
-                console.log("user is signed in");
-            } else {
-                console.log("user is not signed in");
-            }
-        };
+        $scope.$on('event:google-plus-signin-success', function (event,authResult) {
+            $scope.getUserInfo();
+        });
     }]);
 
     /*singup(FORM) controller */
-    app.controller("signupController", ['$scope', 'flash', '$location', '$cookieStore', 'GoogleAPI', function ($scope, flash, $location, $cookieStore, GoogleAPI) {
+    app.controller("signupController", ['$scope', 'flash', '$location', '$cookieStore', function ($scope, flash, $location, $cookieStore) {
         console.log("in the signup controller!");
 
         $scope.passphrase;
@@ -317,7 +237,8 @@
     }]);
 
     /*emails controller*/
-    app.controller('emailsController', ['$scope', 'flash', 'dataFactory', function ($scope, flash, dataFactory) {
+    app.controller('emailsController', ['$scope', 'flash', function ($scope, flash) {
+        $scope.emailsObject = [{}];
         console.log("in the emails controller for whatever reason!");
 
         $scope.getEmailsBatch = function(userEmail, maxResults){
@@ -350,17 +271,13 @@
                         console.log(jsonBulkMessages.result);
                         $.each(jsonBulkMessages.result, function(i, item) {
                             console.log(item.result.id);
-                            $scope.$apply(function(){
-                                $scope.emailsBatch[i].id = item.result.id;
-
-                            });
 
                             console.log(item.result.payload.headers);
                             $.each(item.result.payload.headers, function(i, header) {
                                 if(header.name=="Subject"){
                                     console.log(header.value);
                                     $scope.$apply(function(){
-                                        $scope.emailsBatch[i].subject = header.value;
+                                        $scope.emailsObject.push({"mailId":item.result.id,"subject":header.value});
                                     });
                                 }
                             });
@@ -369,6 +286,7 @@
                         });
 
                         console.log('batch displayed');
+                        console.log($scope.emailsObject);
 
                     },function(reason) {
                         console.log('Error: ' + reason.result.error.message);

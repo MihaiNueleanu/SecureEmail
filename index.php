@@ -29,9 +29,9 @@
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
                 </li> 
 			</ul>
-			<!-- <a ng-click="signOut()" ng-show="userImage">
+			<a ng-click="signOut()" ng-show="userImage">
                 <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>
-            </a> -->
+            </a>
         </div>
     </nav>
 
@@ -46,21 +46,13 @@
         <i class="fa-5x fa fa-refresh fa-spin spinner-color"></i>
     </div>
 
-    <script>
-    (function() {
-        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-    })();
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
-
     <div ng-view ng-cloak></div>
 
     <!-- loading angular scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-cookies.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-route.js"></script>
+
 
     <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -71,6 +63,9 @@
 
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>
+
+    <!-- Google Sign In -->
+    <script type="text/javascript" src="js/google-plus-signin.js"></script>
 
     <!-- angularJS scripts -->
     <script type="text/javascript" src="js/ng.app.js"></script>
