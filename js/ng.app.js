@@ -329,6 +329,17 @@
                 return header.name === fieldName;
             })[0].value;
         };
+        /*var extractField = function (json, fieldName) {
+            var valueToCheck = json.payload.headers.filter(function (header) {
+                return header.name === fieldName;
+            });
+
+            if (!valueToCheck === undefined && valueToCheck.length > 0) {
+                return valueToCheck[0].value;
+            }
+
+            return undefined;
+        };*/
 
         $scope.getMessage = function(id){
             gapi.client.request({
