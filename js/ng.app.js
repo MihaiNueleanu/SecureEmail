@@ -89,6 +89,51 @@
         return interceptor;
     });
 
+    app.factory("ppsService", ['$http', '$location', '$cookieStore', function($http ,$location, $cookieStore) {
+        var serviceBase = 'services/'
+        var obj = {};
+
+        obj.createAccount = function (uid , ps , ph , pubkey , privkey) {
+            console.log("IN THE FACTORY WE HAVE: uid:" + uid + " ,ps: " + ps + " ,ph: " + ph + " ,AND THE KEYS...");
+            return $http.post(serviceBase + 'createAccount',{
+                'uid': uid,
+                'ps': ps,
+                'ph': ph,
+                'pubkey': pubkey,
+                'privkey': privkey
+            }).then(function (result) {
+                console.log(result);
+                return result;
+            });
+        };
+
+        obj.getKeyPair = function(uid , ps , ph ){
+            console.log("$http.get(" + serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph)
+            return $http.get(serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph).then(function (result) {
+                console.log(result);
+
+                $cookieStore.put("pubkey",result.data.pubkey);
+                $cookieStore.put("privkey",result.data.privkey);
+
+                $location.path("/emails");
+                return result;
+            });
+        };
+
+        obj.getPublicKey = function(uid ){
+            console.log("$http.get(" + serviceBase + 'getPublicKey?uid=' + uid )
+            return $http.get(serviceBase + 'getPublicKey?uid=' + uid).then(function (result) {
+                $cookieStore.put("rpubkey",result.data.pubkey);
+                //console.log("--------------------FACTORY-----------------------");
+                //console.log(result.data.pubkey);
+                //console.log("--------------------------------------------------");
+                return result;
+            });
+        };
+
+        return obj;
+    }]);
+
     /*configuring route provider (views)*/
     app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
@@ -191,7 +236,7 @@
 
                         $rootScope.userEmail = $scope.userEmail
                     });
-                    $location.path("/emails");
+                    //var hasAccount = $cookieStore.get("hasAccount");
                 },function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
@@ -203,21 +248,18 @@
         });
     }]);
 
-    /*singup(FORM) controller */
-    app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', function ($scope, flash, $location, $rootScope) {
+    /*sign-up(FORM) controller */
+    app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', function ($scope, flash, $location, $rootScope, ppsService) {
         console.log("in the signup controller!");
 
         $scope.passphrase;
 
-        $scope.$watch('passphrase' ,function() {
-            //$scope.hashedPassphrase = $scope.passphrase;
-        });
-
         $scope.validateForm = function() {
             console.log("validating form");
             var userId = $rootScope.userEmail;
-            var salt = "notSoRandomSalt" //TODO should be generated on server.
-            var hash = CryptoJS.SHA1($scope.passphrase + salt);
+            var salt = "notSoRandomSalt" //TODO should be changed to be maybe base64 of email...
+            var temp = CryptoJS.SHA1($scope.passphrase + salt);
+            var hash = temp.toString();
             console.log("Hashed Passphrase:");
             console.log(hash);
 
@@ -231,11 +273,14 @@
 
             openpgp.generateKeyPair(options).then(function(keypair) {
                 // success
-                var privateKey = keypair.privateKeyArmored;
                 var publicKey = keypair.publicKeyArmored;
+                var privateKey = keypair.privateKeyArmored;
 
-                console.log("generated private key:\n\n" + privateKey);
                 console.log("generated public key:\n\n" + publicKey);
+                console.log("generated private key:\n\n" + privateKey);
+
+                console.log("SENDING THIS TO FACTORY userId:" + userId + " ,salt: " + salt + " ,hash: " + hash + " ,AND THE KEYS...");
+                ppsService.createAccount(userId , salt , hash , publicKey , privateKey);
 
             }).catch(function(error) {
                 // failure
@@ -245,8 +290,115 @@
         };
     }]);
 
+    /*sign-in(FORM) controller */
+    app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', function ($scope, flash, $location, $rootScope, ppsService) {
+        console.log("in the signin controller!");
+
+        $scope.passphrase;
+
+        $scope.validateForm = function() {
+            console.log("validating form");
+            var userId = $rootScope.userEmail;
+            var salt = "notSoRandomSalt" //TODO should be changed to be maybe base64 of email...
+            var temp = CryptoJS.SHA1($scope.passphrase + salt);
+            var hash = temp.toString();
+            console.log("Hashed Passphrase:");
+            console.log(hash);
+
+            console.log("going to try and retrieve the key pair for scope.userId: " + userId + " and hash: " + hash + "and this salt:" + salt );
+
+            ppsService.getKeyPair(userId , salt , hash);
+
+        };
+    }]);
+
+    /*compose mail form controller*/
+    app.controller('composeMailController', ['$scope', 'flash', '$cookieStore','$rootScope', 'ppsService', function ($scope, flash, $cookieStore, $rootScope, ppsService) {
+        $scope.pubkey = $cookieStore.get('pubkey');
+        $scope.privkey = $cookieStore.get('privkey');
+
+        $scope.mailTo = "mihai.nueleanu@gmail.com" ; //TODO make it work
+        $scope.mailContent ; //TODO make it work
+        $scope.mailSubject ; //TODO make it work
+
+        $scope.$watch('mailTo', function() {
+            ppsService.getPublicKey($scope.mailTo).then(function() {
+                $scope.recipentPublicKey = $cookieStore.get("rpubkey");
+                console.log("********************************************************************");
+                console.log($scope.recipentPublicKey);
+                console.log("********************************************************************");
+            });
+        });
+
+
+        /*var str = 'http://mail.google.com/mail/?view=cm&fs=1'+
+            '&to=' + opts.to +
+            '&su=' + opts.subject +
+            '&body=' + opts.message.replace(/\n/g,'%0A') +
+            '&ui=1';*/
+
+        /*$scope.sendMail = function(mailTo, mailContent, recipentPublicKey, callback) {*/
+        $scope.sendMail = function() {
+            console.log("Trying to encrypted message")
+
+            $scope.encryptedMailContent;
+
+            var encryptMailContent = function(publicKey, mailContent) {
+                /*console.log("encryptMailContent: Trying to encrypt: publicKey : \n" + publicKey + "\n\n mailContent: \n" + mailContent )*/
+                var key = openpgp.key.readArmored(publicKey);
+
+                openpgp.encryptMessage(key.keys, mailContent).then(function(encryptedMailContent) {
+                    console.log("success! :)");
+                    //console.log(encryptedMailContent);
+                    $scope.encryptedMailContent = encryptedMailContent;
+                    console.log($scope.encryptedMailContent);
+                    var base64EncodedEmail = btoa($scope.encryptedMailContent);
+                    console.log("THIS IS WHAT WE WILL EVENTUALLY SEND!");
+                    console.log(base64EncodedEmail);
+                }).catch(function(error) {
+                    console.log("fail :(");
+                    return error;
+                });
+            };
+
+            encryptMailContent($scope.recipentPublicKey ,$scope.mailContent)
+
+            /*var message =   "-----BEGIN PGP MESSAGE----- \n" +
+                            "Version: OpenPGP.js v0.10.1 \n" +
+                            "Comment: http://openpgpjs.org \n" +
+                            "wcBMA9BEIWX6J/2oAQf/dcU7FefL+y0QrLeG0a9CvgejyyVSCAkkF86dGi1c \n" +
+                            "pxBIy1z1UePPgc0JdXANHtpCHYIXRczZbVlBQDAolubHgqKuPa5I3yw9VgZo \n" +
+                            "jE6NlCmgLQSZjysiBQFMzVmya4St+hEt3cjJvvW55KYKV4vymS5YO2fJP0IU \n" +
+                            "mtbfnh4iMmT1bqC37EG/glHewbPFxqnogPZeEPcLjCGl3eOgu2WNrcorZwYf \n" +
+                            "ymh2n32tYp0k0XaC5YV9Y4s8LJAICxBdKeThgSlPHIrvYsks0JJKyeOYwtZu \n" +
+                            "00j6iIZJUXoF5NMk/7wOZmavii5WgltsFAkIeGutXGpK0+4MIxhrELBW3F3/ \n" +
+                            "0dJHAUBLIUC1GR7DhQY5PyQMsnukmwxy4Z6ixPVF47/aY0epR/jeM8bZcLs8 \n" +
+                            "5pn9R9aT2oZ9hO93RYHkIwAv1IevbO7WW799BZA= \n" +
+                            "    =Iy/D \n" +
+                            "-----END PGP MESSAGE-----";*/
+
+            //TODO REVIVE ME
+            /*gapi.client.request({
+                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/send',
+                'method': 'POST',
+                'headers': {'Content-Type': 'application/json'},
+                'userId': mailTo,
+                'message': {
+                    'raw': base64EncodedEmail
+                },
+                'callback': function(jsonResponse) {
+                    console.log(jsonResponse);
+                }
+            });
+            request.execute(callback);*/
+        }
+    }]);
+
     /*emails controller*/
-    app.controller('emailsController', ['$scope', 'flash', function ($scope, flash) {
+    app.controller('emailsController', ['$scope', 'flash', '$cookieStore', function ($scope, flash, $cookieStore) {
+
+        $scope.pubkey = $cookieStore.get('pubkey');
+        $scope.privkey = $cookieStore.get('privkey');
 
         var extractField = function(json, fieldName) {
             return json.result.payload.headers.filter(function(header) {
@@ -329,17 +481,6 @@
                 return header.name === fieldName;
             })[0].value;
         };
-        /*var extractField = function (json, fieldName) {
-            var valueToCheck = json.payload.headers.filter(function (header) {
-                return header.name === fieldName;
-            });
-
-            if (!valueToCheck === undefined && valueToCheck.length > 0) {
-                return valueToCheck[0].value;
-            }
-
-            return undefined;
-        };*/
 
         $scope.getMessage = function(id){
             gapi.client.request({
@@ -366,6 +507,19 @@
                 }
             });
         }
+
+        /*var key = '-----BEGIN PGP PRIVATE KEY BLOCK ... END PGP PRIVATE KEY BLOCK-----';
+        var privateKey = openpgp.key.readArmored(key).keys[0];
+        privateKey.decrypt('passphrase');
+
+        var pgpMessage = '-----BEGIN PGP MESSAGE ... END PGP MESSAGE-----';
+        pgpMessage = openpgp.message.readArmored(pgpMessage);
+
+        openpgp.decryptMessage(privateKey, pgpMessage).then(function(plaintext) {
+            // success
+        }).catch(function(error) {
+            // failure
+        });*/
         $scope.getMessage($scope.param);
 
     }]);

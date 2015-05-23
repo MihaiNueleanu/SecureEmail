@@ -33,7 +33,6 @@
     </div>
 </div>
 <div id="signup" class="signup">
-
     <div class="step step-1">
         <h3><span class="label label-default">Step 1.</span> Sign in using your current mail provider (currently supporting only Gmail)</h3>
         <google-plus-signin clientid="751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com"></google-plus-signin>
@@ -43,11 +42,27 @@
         <h3><span class="label label-default">Step 2.</span> Select a passphrase, this will be used to identify you in our system</h3>
         {{passphrase}}
         <div ng-controller="signupController">
-            <form id="create-account-form" name="form" novalidate >
+            <form id="create-account-form" name="create-account-form" novalidate >
                 <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="Select a pass phrase" id="passphrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
+                    <input type="text" class="form-control" placeholder="Select a pass phrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
                     <span class="input-group-btn">
                         <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="validateForm()">Create account</button>
+                    </span>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="step step-2.5">
+        <h3><span class="label label-default">Step 2.5</span> Sign-in (our system)</h3>
+        {{passphrase}}
+        <div ng-controller="signinController">
+            <form id="sign-into-account-form" name="sign-into-account-form" novalidate >
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control" placeholder="Whats your pass phrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="validateForm()">Sign-in</button>
                     </span>
 
                 </div>

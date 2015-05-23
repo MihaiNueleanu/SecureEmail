@@ -49,7 +49,7 @@ angular.module('directive.g+signin', []).
         
         // Asynchronously load the G+ SDK.
         var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js';
+        po.src = 'https://apis.google.com/js/client:platform.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 
         linker(function(el, tScope){

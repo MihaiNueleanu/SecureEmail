@@ -24,14 +24,21 @@
 			<a href="#" class="navbar-brand"><img src="images/icon.png"/>Mizaru<span class="light"></span></a>
 		</div>
 		<div class="collapse navbar-collapse" id="navbar">
-			<ul class="nav navbar-nav" ng-repeat="link in nav.links" ng-class="{hidden:nav.isHidden()}">
+			<ul class="nav navbar-nav">
+                <li ng-class="{disabled: link.disabled, active: nav.isSet($index)}" ng-repeat="link in nav.links">
+                    <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" ng-show="userImage" >{{link.name}}</a>
+                </li>
                 <li ng-class="{disabled: link.disabled, active: nav.isSet($index)}">
-                    <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" >{{link.name}}</a>
-                </li> 
+                    <a  ng-click="signOut()" ng-show="userImage">Sign out</a>
+                </li>
+                <li class="disabled" ng-class="{disabled: link.disabled, active: nav.isSet($index)}">
+                    <a ng-hide="userImage">Sign-in</a>
+                </li>
+                <li>
+                    <a data-toggle="modal" data-target="#myModal" ng-show="userImage">Compose mail</a>
+                </li>
 			</ul>
-			<a ng-click="signOut()" ng-show="userImage">
-                <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>
-            </a>
+            <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>
         </div>
     </nav>
 
@@ -44,6 +51,39 @@
     <div id="loading-spinner" class="alert">
         <h3>Loading, please wait.</h3>
         <i class="fa-5x fa fa-refresh fa-spin spinner-color"></i>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" ng-controller="composeMailController">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Compose Mail</h4>
+                </div>
+                <div class="modal-body" >
+                    {{mailContent}}
+                    <form id="compose-mail-form" name="compose-mail-form" novalidate >
+                        <div class="form-group ">
+                            <label for="To">Email address</label>
+                            <input type="text" class="form-control" id="To" ng-model="mailTo" placeholder="someone@somewhere.com" required>
+                        </div>
+                        <div class="form-group ">
+                            <label for="Subject">Subject</label>
+                            <input type="text" class="form-control" id="Subject" ng-model="mailSubject" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mailContent">Message</label>
+                            <textarea class="form-control" rows="5" id="mailContent" ng-model="mailContent" ng-minlength="1" placeholder="Write your secret message here" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="form.$invalid" ng-click="sendMail()">Send</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div ng-view ng-cloak></div>
