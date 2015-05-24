@@ -352,16 +352,13 @@
                     //console.log(encryptedMailContent);
                     $scope.encryptedMailContent = encryptedMailContent;
                     console.log($scope.encryptedMailContent);
-                    var base64EncodedEmail = btoa($scope.encryptedMailContent);
-                    console.log("THIS IS WHAT WE WILL EVENTUALLY SEND!");
-                    console.log(base64EncodedEmail);
                 }).catch(function(error) {
                     console.log("fail :(");
                     return error;
                 });
             };
 
-            encryptMailContent($scope.recipentPublicKey ,$scope.mailContent)
+            encryptMailContent($scope.recipentPublicKey ,$scope.mailContent);
 
             /*var message =   "-----BEGIN PGP MESSAGE----- \n" +
                             "Version: OpenPGP.js v0.10.1 \n" +
@@ -378,12 +375,17 @@
                             "-----END PGP MESSAGE-----";*/
 
             //TODO REVIVE ME
-            /*gapi.client.request({
+            /*
+            gapi.client.request({
                 'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/send',
                 'method': 'POST',
                 'headers': {'Content-Type': 'application/json'},
-                'userId': mailTo,
                 'message': {
+                    "payload": {
+                        "body": {
+                            "data": "hello mihai"
+                        }
+                    }
                     'raw': base64EncodedEmail
                 },
                 'callback': function(jsonResponse) {
@@ -391,6 +393,37 @@
                 }
             });
             request.execute(callback);*/
+
+            gapi.client.load('gmail', 'v1', function() {
+                console.log("GMAIL LOADED");
+                sendMessage = function(email,callback) {
+                    console.log("in the mail sending");
+                    var base64Encoded = btoa(email);
+                    var request = gapi.client.gmail.users.messages.send({
+                        userId: 'me',
+                        resource: {
+                            'raw': base64Encoded
+                        }
+                    });
+                    console.log("executing request");
+                    request.execute(callback);
+
+                };
+                var to = $scope.mailTo,
+                    subject = $scope.mailSubject,
+                    content = $scope.encryptedMailContent;
+
+                var email = "From: 'me'\r\n"+
+                    "To:  "+ to +"\r\n"+
+                    "Subject: "+subject+"\r\n"+
+                    "\r\n"+
+                    content;
+                sendMessage(email, function (arguments) {
+                    console.log("after message sending ");
+                    console.log(arguments);
+                });
+
+            });
         }
     }]);
 
