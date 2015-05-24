@@ -12,20 +12,6 @@
                 $location.path("/home");
             }
         });
-
-        $rootScope.$on('event:google-plus-signin-success', function (event,authResult) {
-            console.log("user is signed in");
-            $('#signup .step.step-1').addClass('hidden');
-            $rootScope.signedIn = true;
-
-        });
-
-        $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
-            console.log("user is not signed in - redirecting to home");
-            $('#signup .step.step-1').removeClass('hidden');
-            $rootScope.signedIn = false;
-            $location.path("/home");
-        });
     });
 
     /* testing for a userEmail cookie and if does not exist redirecting to main */
@@ -52,13 +38,7 @@
 	            "name": "spam",
 	            "url": "#spam",
 	            "disabled": true
-	        },
-            {
-                "title": "signup",
-                "name": "signup",
-                "url": "#signup",
-                "disabled": false
-            }
+	        }
         ]
     });
 
@@ -89,7 +69,7 @@
         return interceptor;
     });
 
-    app.factory("ppsService", ['$http', '$location', '$cookieStore', function($http ,$location, $cookieStore) {
+    app.factory("ppsService", ['$http', '$location', '$cookieStore','$rootScope', function($http ,$location, $cookieStore, $rootScope) {
         var serviceBase = 'services/'
         var obj = {};
 
@@ -112,19 +92,31 @@
             return $http.get(serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph).then(function (result) {
                 console.log(result);
 
-                $cookieStore.put("pubkey",result.data.pubkey);
-                $cookieStore.put("privkey",result.data.privkey);
-
-                $location.path("/emails");
-                return result;
+                //test if keys were recieved
+                if (result.status != 204) {
+                    $cookieStore.put("pubkey",result.data.pubkey);
+                    $cookieStore.put("privkey",result.data.privkey);
+                    $rootScope.$broadcast('event:show-menu');
+                    $location.path("/emails");
+                    return result;
+                } else {
+                    console.log("unable to retrieve key pair")
+                    $location.path("/home");
+                }
             });
         };
 
         obj.getPublicKey = function(uid ){
             console.log("$http.get(" + serviceBase + 'getPublicKey?uid=' + uid )
             return $http.get(serviceBase + 'getPublicKey?uid=' + uid).then(function (result) {
-                $cookieStore.put("rpubkey",result.data.pubkey);
-                return result;
+
+                //test if public key revieved
+                if (result.status != 204) {
+                    $cookieStore.put("rpubkey",result.data.pubkey);
+                    return result;
+                } else {
+                    console.log("unable to public key")
+                }
             });
         };
 
@@ -145,10 +137,6 @@
         when('/home', {
             templateUrl: 'views/index.html',
             controller: 'mainController'
-        }).
-        when('/signup', {
-            templateUrl: 'views/signup.html',
-            controller: 'signupController'
         }).
         otherwise({
             redirectTo: '/home'
@@ -190,7 +178,8 @@
     });
 
     /*navigation (list of links in bottom) + SSO Validation call*/
-    app.controller("NavController", ['CONFIG', '$scope', '$cookieStore', function (CONFIG, $scope, $cookieStore) {
+    app.controller("NavController", ['CONFIG', '$scope','$rootScope', function (CONFIG, $scope, $rootScope) {
+        $scope.hideNav = true;
         this.links = CONFIG.LINKS;
 
         this.isSet = function (link) {
@@ -201,22 +190,57 @@
             this.link = link;
         };
 
-        $scope.signOut = function () {
-            console.log("sign out using NAV");
-            gapi.auth.signOut();
-        };
+        $rootScope.$on('event:show-menu', function () {
+            $scope.hideNav = false;
+        });
 
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", [ '$scope', 'flash', '$location', '$rootScope', function ($scope, flash, $location, $rootScope ) {
+    app.controller("mainController", [ '$scope', 'flash', '$location', '$rootScope', '$cookieStore','$timeout', function ($scope, flash, $location, $rootScope, $cookieStore, $timeout ) {
         $scope.userEmail;
         $scope.displayName;
         $scope.userImage;
 
+        $scope.signupProgress = 0;
+        $scope.keyPairGenerated = false;
+        $scope.accountExists = $cookieStore.get("accountExists");
+
+        if ($scope.accountExists == 'true') {
+            console.log("MAINCONTROLLER: user already have an account");
+            $scope.keyPairGenerated = true;
+
+            //TODO this should only trigger if a stored passphrase is available
+            //$rootScope.$broadcast('event:request-key-pair');
+        }
+
         // Button "go" (navigate to a single entity page)
         $scope.go = function (path) {
             $location.path(path);
+        };
+
+        $scope.signOut = function () {
+            console.log("signing out + removing cookies + resetting scope variables");
+            gapi.auth.signOut();
+
+            angular.forEach($cookieStore, function (cookie, key) {
+                if (key.indexOf('NAV-') > -1) {
+                    $window.sessionStorage.setItem(key, cookie);
+                    delete $cookieStore[key];
+                }
+            });
+            $cookieStore.remove("ph");
+            $cookieStore.remove("pubkey");
+            $cookieStore.remove("privkey");
+            $cookieStore.remove("rpubkey");
+
+            $scope.userEmail = null;
+            $scope.displayName = null;
+            $scope.userImage = null;
+
+            $rootScope.signedIn = false;
+            $('#signin .step.step-1').removeClass('hidden');
+            $('#signin .step.step-1').removeClass('hidden');
         };
 
         $scope.getUserInfo = function(){
@@ -230,28 +254,59 @@
                         $scope.userEmail = response.result.emails[0].value;
                         $scope.displayName = response.result.displayName;
                         $scope.userImage = response.result.image.url;
+                        $scope.signupProgress = 50;
 
-                        $rootScope.userEmail = $scope.userEmail
+                        // Not sure if needed
+                        $rootScope.userEmail = $scope.userEmail;
+                        console.log("getUserInfo() - $rootScope.userEmail: " + $rootScope.userEmail);
                     });
-                    //var hasAccount = $cookieStore.get("hasAccount");
+
                 },function(reason) {
                     console.log('Error: ' + reason.result.error.message);
                 });
             });
         };
 
-        $scope.$on('event:google-plus-signin-success', function (event,authResult) {
+        $scope.accountCreated = function () {
+            $scope.accountExists = true;
+            $cookieStore.put("accountExists", "true");
+            $rootScope.$broadcast('event:request-key-pair');
+        };
+
+        /* Event listeners */
+        $rootScope.$on('event:google-plus-signin-success', function (event,authResult) {
+            console.log("RUN: user is signed in");
+            $('#signup .step.step-1').addClass('hidden');
+            $('#signup .step.step-2').removeClass('hidden');
+            $('#signin .step.step-1').addClass('hidden');
+            $('#signin .step.step-2').removeClass('hidden');
+            $rootScope.signedIn = true;
             $scope.getUserInfo();
+        });
+
+        $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
+            console.log("RUN: user signed out (redirecting to home)");
+            $('#signup .step.step-1').removeClass('hidden');
+            $rootScope.signedIn = false;
+            $location.path("/home");
+        });
+
+        $rootScope.$on('event:key-pair-created', function () {
+            console.log("KEY PAIR CREATED SUCESSFULLY IN A DIFFERENT CONTROLLER");
+            $scope.signupProgress = 100;
+            $scope.keyPairGenerated = true;
+            $('#signup .step.step-3').removeClass('hidden');
+            $timeout($scope.accountCreated, 3000);
         });
     }]);
 
     /*sign-up(FORM) controller */
     app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', function ($scope, flash, $location, $rootScope, ppsService) {
-        console.log("in the signup controller!");
+        console.log("in the signup(createAccount) controller!");
 
         $scope.passphrase;
 
-        $scope.validateForm = function() {
+        $scope.createAccount = function() {
             console.log("validating form");
             var userId = $rootScope.userEmail;
             var salt = btoa(userId);
@@ -278,60 +333,47 @@
 
                 console.log("SENDING THIS TO FACTORY userId:" + userId + " ,salt: " + salt + " ,hash: " + hash + " ,AND THE KEYS...");
                 ppsService.createAccount(userId , salt , hash , publicKey , privateKey);
-
-                $scope.createLabel();
-
+                $rootScope.$broadcast('event:key-pair-created');
 
             }).catch(function(error) {
                 // failure
             });
-
         };
-        /*$scope.createLabel = function(){
-            console.log("create labels function");
-            gapi.client.load('gmail', 'v1', function() {
-                function createLabel(newLabelName, callback) {
-                    console.log("creating label now");
-                    var request = gapi.client.gmail.users.labels.create({
-                        userId : 'me',
-                        labelListVisibility   : 'labelShow',
-                        messageListVisibility : 'show',
-                        name : 'SECMAIL'
-                    });
-                    request.execute(callback);
-                }
-                createLabel();
-            });
-            console.log("create labels function - END");
-        };*/
+
+        $scope.$watch('passphrase', function() {
+            console.log("changing the passphrase in the rootscope so it could be shared");
+            $rootScope.passphrase = $scope.passphrase;
+        });
     }]);
 
     /*sign-in(FORM) controller */
     app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService','$cookieStore', function ($scope, flash, $location, $rootScope, ppsService, $cookieStore) {
-        console.log("in the signin controller!");
+        console.log("in the signin(getKeyPair) controller!");
 
         $scope.passphrase;
 
-        $scope.validateForm = function() {
-            console.log("validating form");
+        if ($rootScope.passphrase != undefined) {
+            console.log("signinController: -$rootScope.passphrase: " + $rootScope.passphrase);
+            $scope.passphrase = $rootScope.passphrase;
+        }
+
+        $scope.getKeyPair = function() {
+            console.log("SIGNINCONTROLLER: trying to get a key pair");
             var userId = $rootScope.userEmail;
+
+            console.log("getKeyPair() - $rootScope.userEmail: " + $rootScope.userEmail);
             var salt = btoa(userId);
             var temp = CryptoJS.SHA1($scope.passphrase + salt);
             var hash = temp.toString();
 
-            console.log("Hashed Passphrase:");
-            console.log(hash);
-            console.log("#####################SING-IN############################");
-            console.log("salt: " + salt + ", hash: " + hash );
-            console.log("########################################################");
-
             $cookieStore.put ("ph",hash);
-
-            console.log("going to try and retrieve the key pair for scope.userId: " + userId + " and hash: " + hash + "and this salt:" + salt );
-
             ppsService.getKeyPair(userId , salt , hash);
-
         };
+
+        /* Event listener */
+        $rootScope.$on('event:request-key-pair', function () {
+            $scope.getKeyPair();
+        });
     }]);
 
     /*compose mail form controller*/
@@ -419,8 +461,17 @@
     /*emails controller*/
     app.controller('emailsController', ['$scope', 'flash', '$cookieStore', function ($scope, flash, $cookieStore) {
 
-        $scope.pubkey = $cookieStore.get('pubkey');
-        $scope.privkey = $cookieStore.get('privkey');
+        $scope.pubkey;
+        $scope.privkey;
+
+        if($cookieStore.get('pubkey') != undefined) {
+            $scope.pubkey = $cookieStore.get('pubkey');
+        }
+
+        if($cookieStore.get('privkey') != undefined) {
+            $scope.privkey = $cookieStore.get('privkey');
+        }
+
 
         var extractField = function(json, fieldName) {
             return json.result.payload.headers.filter(function(header) {

@@ -146,6 +146,7 @@ input.ng-valid.ng-touched {
     border-radius: 50%;
 }
 
+/* frontpage graphics */
 .thumbnail {
     border: none;
     text-align: center;
@@ -179,10 +180,46 @@ div.col-sm-6.col-md-4:nth-of-type(3)> div {
     margin-top:20px;
 }
 
+/* spinner */
 .spinner-color {
     color: #7ababa;
 }
 
+.glyphicon.glyphicon-ok {
+    padding: 8px;
+    border-radius: 50%;
+    background: #5cb85c;
+    color: #fff;
+}
+/* Emails controller */
+.single-email,
+.email-list {margin-top: 48px;}
+
+.badge.iconified {
+    padding: 3px 4px 3px 5px;
+    border-radius: 50%;
+}
+
+@media (min-width: 768px) {
+    .navbar-nav>li.logout>a,
+    .navbar-nav>li.compose>a {
+        cursor: pointer;
+    }
+    .navbar-nav>li.compose>a {
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+        color:#ffffff;
+    }
+
+    .navbar-nav>li.compose>a:hover {
+        background: #5cb85c;
+        color:#ffffff;
+    }
+}
+
+
+/* sign up form */
 .signup  {padding-left: 15px; padding-right: 15px;text-align: center;clear: both;}
 
 .signup #create-account-form {
@@ -207,16 +244,23 @@ div.col-sm-6.col-md-4:nth-of-type(3)> div {
     top: 15px;
 }
 
-.glyphicon.glyphicon-ok {
-    padding: 8px;
-    border-radius: 50%;
-    background: #5cb85c;
-    color: #fff;
+.signup .progress.progress-lg {
+    height: 46px;
 }
-.single-email,
-.email-list {margin-top: 48px;}
 
-.badge.iconified {
-    padding: 3px 4px 3px 5px;
-    border-radius: 50%;
+.signup .progress.progress-lg .progress-bar{
+    line-height: 46px;
+}
+
+/* sign-in form */
+.signin {background: rgba(255,255,255,0.8);padding: 15px;box-shadow: 0 2px 4px rgba(0,0,0,0.4);max-width: 60%;margin-left: 20%;margin-top: 50px;text-align: center;clear: both;}
+
+.signin .step {
+    position: relative;
+}
+
+.signin .step .label.label-default {
+    position: absolute;
+    left: 0px;
+    top: 0px;
 }

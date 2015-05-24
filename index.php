@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="css/default.css">
 </head>
 <body ng-controller="mainController">
-	<nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavController as nav" ng-cloak>
+	<nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavController as nav">
 		<div class="navbar-header">
 			<button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
 			<span class="sr-only">Toggle navigation</span>
@@ -25,17 +25,17 @@
 		</div>
 		<div class="collapse navbar-collapse" id="navbar">
 			<ul class="nav navbar-nav">
-                <li ng-class="{disabled: link.disabled, active: nav.isSet($index)}" ng-repeat="link in nav.links">
+                <li ng-repeat="link in nav.links" ng-class="{disabled: link.disabled, active: nav.isSet($index)}" ng-hide="hideNav">
                     <a title="{{link.title}}" href="{{link.url}}" ng-click="link.isDisabled || nav.navClick($index)" ng-show="userImage" >{{link.name}}</a>
                 </li>
-                <li ng-class="{disabled: link.disabled, active: nav.isSet($index)}">
-                    <a  ng-click="signOut()" ng-show="userImage">Sign out</a>
+                <li ng-show="userImage" class="logout">
+                    <a ng-click="signOut()">Sign out</a>
                 </li>
-                <li class="disabled" ng-class="{disabled: link.disabled, active: nav.isSet($index)}">
-                    <a ng-hide="userImage">Sign-in</a>
+                <li class="disabled" ng-class="{disabled: link.disabled, active: nav.isSet($index)}" ng-hide="hideNav">
+                    <a href="#/home">Sign-in</a>
                 </li>
-                <li>
-                    <a data-toggle="modal" data-target="#myModal" ng-show="userImage">Compose mail</a>
+                <li ng-hide="hideNav" class="compose">
+                    <a class="bg-primary" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-pencil"></span> Compose mail</a>
                 </li>
 			</ul>
             <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>

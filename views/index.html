@@ -1,7 +1,29 @@
-<div class="jumbotron" ng-controller="mainController">
+<div class="jumbotron">
     <h1>Welcome to the most private mail service EVER(!)</h1>
     <p>We believe that user privacy is important, because of that we would never read your mails, heck we would try and ensure no one else could read them too.<span class="label label-info">Signing up takes only 3 simple steps.</span></p>
-    <a class="btn btn-lg btn-success" id="signupButton">Signup here</a>
+    <a class="btn btn-lg btn-success" id="signupButton" ng-hide="accountExists">Signup here</a>
+    <div id="signin" class="signin" ng-show="accountExists">
+        <h2>Nice to see you again, please sign into your account</h2>
+        <div class="step step-1">
+            <h3><span class="label label-default">Step 1.</span> We see you signed out from your google account, please sign in again</h3>
+            <google-plus-signin clientid="751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com"></google-plus-signin>
+        </div>
+        <div class="step step-2.5">
+            <h3><span class="label label-default">Step 2</span> Sign-in (our system)</h3>
+            {{passphrase}}
+            <div ng-controller="signinController">
+                <form id="sign-into-account-form" name="sign-into-account-form" novalidate >
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control" placeholder="Whats your pass phrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="getKeyPair()">Sign-in</button>
+                    </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
@@ -32,13 +54,18 @@
         </div>
     </div>
 </div>
-<div id="signup" class="signup">
+
+<div id="signup" class="signup" ng-hide="accountExists">
+    <div class="progress progress-lg">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:{{signupProgress}}%; min-width: 2em;">
+            {{signupProgress}}%
+        </div>
+    </div>
     <div class="step step-1">
         <h3><span class="label label-default">Step 1.</span> Sign in using your current mail provider (currently supporting only Gmail)</h3>
         <google-plus-signin clientid="751944076427-vqqieir1dit5gko8e9fffc51ttqt8fnd.apps.googleusercontent.com"></google-plus-signin>
     </div>
-
-    <div class="step step-2">
+    <div class="step step-2 hidden" ng-hide="keyPairGenerated">
         <h3><span class="label label-default">Step 2.</span> Select a passphrase, this will be used to identify you in our system</h3>
         {{passphrase}}
         <div ng-controller="signupController">
@@ -46,31 +73,13 @@
                 <div class="input-group input-group-lg">
                     <input type="text" class="form-control" placeholder="Select a pass phrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
                     <span class="input-group-btn">
-                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="validateForm()">Create account</button>
+                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="createAccount()">Create account</button>
                     </span>
-
                 </div>
             </form>
         </div>
     </div>
-
-    <div class="step step-2.5">
-        <h3><span class="label label-default">Step 2.5</span> Sign-in (our system)</h3>
-        {{passphrase}}
-        <div ng-controller="signinController">
-            <form id="sign-into-account-form" name="sign-into-account-form" novalidate >
-                <div class="input-group input-group-lg">
-                    <input type="text" class="form-control" placeholder="Whats your pass phrase" ng-model="passphrase" ng-minlength="8" required data-toggle="tooltip" data-placement="top" title="Make sure you remember the passphrase, we cant help you if you forget it">
-                    <span class="input-group-btn">
-                        <button class="btn btn-success" type="button" ng-disabled="form.$invalid" ng-click="validateForm()">Sign-in</button>
-                    </span>
-
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="step step-3">
+    <div class="step step-3 hidden" ng-show="keyPairGenerated">
         <h3><span class="label label-default">Step 3.</span><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> youre all set!</h3>
         <p class="label label-success">let us redirect you to your mail account.</p>
     </div>
