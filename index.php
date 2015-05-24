@@ -62,12 +62,15 @@
                     <h4 class="modal-title" id="myModalLabel">Compose Mail</h4>
                 </div>
                 <div class="modal-body" >
-                    {{mailContent}}
+
                     <form id="compose-mail-form" name="compose-mail-form" novalidate >
                         <div class="form-group ">
                             <label for="To">Email address</label>
-                            <input type="text" class="form-control" id="To" ng-model="mailTo" placeholder="someone@somewhere.com" required>
+                            <input type="text" class="form-control" id="To" ng-model="mailTo" placeholder="someone@somewhere.com" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur': 0} }" required>
+                            <span class="label label-success" ng-show="canEncrypt">Encrypted mail is possible</span>
+                            <span class="label label-warning" ng-show="canEncrypt==false">Message will not be encrypted</span>
                         </div>
+
                         <div class="form-group ">
                             <label for="Subject">Subject</label>
                             <input type="text" class="form-control" id="Subject" ng-model="mailSubject" placeholder="Subject" required>
@@ -80,7 +83,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" ng-disabled="form.$invalid" ng-click="sendMail()">Send</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="form.$invalid" ng-click="sendMail()" data-dismiss="modal">Send</button>
                 </div>
             </div>
         </div>

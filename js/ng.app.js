@@ -124,9 +124,6 @@
             console.log("$http.get(" + serviceBase + 'getPublicKey?uid=' + uid )
             return $http.get(serviceBase + 'getPublicKey?uid=' + uid).then(function (result) {
                 $cookieStore.put("rpubkey",result.data.pubkey);
-                //console.log("--------------------FACTORY-----------------------");
-                //console.log(result.data.pubkey);
-                //console.log("--------------------------------------------------");
                 return result;
             });
         };
@@ -257,7 +254,7 @@
         $scope.validateForm = function() {
             console.log("validating form");
             var userId = $rootScope.userEmail;
-            var salt = "notSoRandomSalt" //TODO should be changed to be maybe base64 of email...
+            var salt = btoa(userId);
             var temp = CryptoJS.SHA1($scope.passphrase + salt);
             var hash = temp.toString();
             console.log("Hashed Passphrase:");
@@ -282,16 +279,35 @@
                 console.log("SENDING THIS TO FACTORY userId:" + userId + " ,salt: " + salt + " ,hash: " + hash + " ,AND THE KEYS...");
                 ppsService.createAccount(userId , salt , hash , publicKey , privateKey);
 
+                $scope.createLabel();
+
+
             }).catch(function(error) {
                 // failure
             });
 
-
         };
+        /*$scope.createLabel = function(){
+            console.log("create labels function");
+            gapi.client.load('gmail', 'v1', function() {
+                function createLabel(newLabelName, callback) {
+                    console.log("creating label now");
+                    var request = gapi.client.gmail.users.labels.create({
+                        userId : 'me',
+                        labelListVisibility   : 'labelShow',
+                        messageListVisibility : 'show',
+                        name : 'SECMAIL'
+                    });
+                    request.execute(callback);
+                }
+                createLabel();
+            });
+            console.log("create labels function - END");
+        };*/
     }]);
 
     /*sign-in(FORM) controller */
-    app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', function ($scope, flash, $location, $rootScope, ppsService) {
+    app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService','$cookieStore', function ($scope, flash, $location, $rootScope, ppsService, $cookieStore) {
         console.log("in the signin controller!");
 
         $scope.passphrase;
@@ -299,11 +315,17 @@
         $scope.validateForm = function() {
             console.log("validating form");
             var userId = $rootScope.userEmail;
-            var salt = "notSoRandomSalt" //TODO should be changed to be maybe base64 of email...
+            var salt = btoa(userId);
             var temp = CryptoJS.SHA1($scope.passphrase + salt);
             var hash = temp.toString();
+
             console.log("Hashed Passphrase:");
             console.log(hash);
+            console.log("#####################SING-IN############################");
+            console.log("salt: " + salt + ", hash: " + hash );
+            console.log("########################################################");
+
+            $cookieStore.put ("ph",hash);
 
             console.log("going to try and retrieve the key pair for scope.userId: " + userId + " and hash: " + hash + "and this salt:" + salt );
 
@@ -317,82 +339,49 @@
         $scope.pubkey = $cookieStore.get('pubkey');
         $scope.privkey = $cookieStore.get('privkey');
 
-        $scope.mailTo = "mihai.nueleanu@gmail.com" ; //TODO make it work
-        $scope.mailContent ; //TODO make it work
-        $scope.mailSubject ; //TODO make it work
+        $scope.mailTo ;
+        $scope.mailContent ;
+        $scope.mailSubject ;
+        $scope.canEncrypt ;
 
         $scope.$watch('mailTo', function() {
             ppsService.getPublicKey($scope.mailTo).then(function() {
-                $scope.recipentPublicKey = $cookieStore.get("rpubkey");
-                console.log("********************************************************************");
-                console.log($scope.recipentPublicKey);
-                console.log("********************************************************************");
+                if($cookieStore.get("rpubkey") != undefined) {
+                    console.log("A key exists for user")
+                    $scope.recipentPublicKey = $cookieStore.get("rpubkey");
+                    $scope.canEncrypt =  true;
+                    console.log($scope.recipentPublicKey);
+                } else {
+                    //TODO send invite message is not encrypted
+                    $scope.canEncrypt =  false;
+                }
             });
         });
 
-
-        /*var str = 'http://mail.google.com/mail/?view=cm&fs=1'+
-            '&to=' + opts.to +
-            '&su=' + opts.subject +
-            '&body=' + opts.message.replace(/\n/g,'%0A') +
-            '&ui=1';*/
-
-        /*$scope.sendMail = function(mailTo, mailContent, recipentPublicKey, callback) {*/
         $scope.sendMail = function() {
-            console.log("Trying to encrypted message")
+            if ($scope.canEncrypt) {
+                console.log("Trying to encrypted message")
+                $scope.encryptedMailContent;
 
-            $scope.encryptedMailContent;
+                var encryptMailContent = function(publicKey, mailContent) {
+                    /*console.log("encryptMailContent: Trying to encrypt: publicKey : \n" + publicKey + "\n\n mailContent: \n" + mailContent )*/
+                    var key = openpgp.key.readArmored(publicKey);
 
-            var encryptMailContent = function(publicKey, mailContent) {
-                /*console.log("encryptMailContent: Trying to encrypt: publicKey : \n" + publicKey + "\n\n mailContent: \n" + mailContent )*/
-                var key = openpgp.key.readArmored(publicKey);
-
-                openpgp.encryptMessage(key.keys, mailContent).then(function(encryptedMailContent) {
-                    console.log("success! :)");
-                    //console.log(encryptedMailContent);
-                    $scope.encryptedMailContent = encryptedMailContent;
-                    console.log($scope.encryptedMailContent);
-                }).catch(function(error) {
-                    console.log("fail :(");
-                    return error;
-                });
-            };
-
-            encryptMailContent($scope.recipentPublicKey ,$scope.mailContent);
-
-            /*var message =   "-----BEGIN PGP MESSAGE----- \n" +
-                            "Version: OpenPGP.js v0.10.1 \n" +
-                            "Comment: http://openpgpjs.org \n" +
-                            "wcBMA9BEIWX6J/2oAQf/dcU7FefL+y0QrLeG0a9CvgejyyVSCAkkF86dGi1c \n" +
-                            "pxBIy1z1UePPgc0JdXANHtpCHYIXRczZbVlBQDAolubHgqKuPa5I3yw9VgZo \n" +
-                            "jE6NlCmgLQSZjysiBQFMzVmya4St+hEt3cjJvvW55KYKV4vymS5YO2fJP0IU \n" +
-                            "mtbfnh4iMmT1bqC37EG/glHewbPFxqnogPZeEPcLjCGl3eOgu2WNrcorZwYf \n" +
-                            "ymh2n32tYp0k0XaC5YV9Y4s8LJAICxBdKeThgSlPHIrvYsks0JJKyeOYwtZu \n" +
-                            "00j6iIZJUXoF5NMk/7wOZmavii5WgltsFAkIeGutXGpK0+4MIxhrELBW3F3/ \n" +
-                            "0dJHAUBLIUC1GR7DhQY5PyQMsnukmwxy4Z6ixPVF47/aY0epR/jeM8bZcLs8 \n" +
-                            "5pn9R9aT2oZ9hO93RYHkIwAv1IevbO7WW799BZA= \n" +
-                            "    =Iy/D \n" +
-                            "-----END PGP MESSAGE-----";*/
-
-            //TODO REVIVE ME
-            /*
-            gapi.client.request({
-                'path': 'https://www.googleapis.com/gmail/v1/users/'+$scope.userEmail+'/messages/send',
-                'method': 'POST',
-                'headers': {'Content-Type': 'application/json'},
-                'message': {
-                    "payload": {
-                        "body": {
-                            "data": "hello mihai"
-                        }
-                    }
-                    'raw': base64EncodedEmail
-                },
-                'callback': function(jsonResponse) {
-                    console.log(jsonResponse);
-                }
-            });
-            request.execute(callback);*/
+                    openpgp.encryptMessage(key.keys, mailContent).then(function(encryptedMailContent) {
+                        console.log("success! :)");
+                        //console.log(encryptedMailContent);
+                        $scope.encryptedMailContent = encryptedMailContent;
+                        console.log($scope.encryptedMailContent);
+                    }).catch(function(error) {
+                        console.log("fail :(");
+                        return error;
+                    });
+                };
+                encryptMailContent($scope.recipentPublicKey ,$scope.mailContent);
+            } else {
+                $scope.mailContent = $scope.mailContent + "\r\n all Rights reserved: Best students EVER!";
+                $scope.encryptedMailContent = $scope.mailContent;
+            }
 
             gapi.client.load('gmail', 'v1', function() {
                 console.log("GMAIL LOADED");
@@ -418,8 +407,8 @@
                     "Subject: "+subject+"\r\n"+
                     "\r\n"+
                     content;
+
                 sendMessage(email, function (arguments) {
-                    console.log("after message sending ");
                     console.log(arguments);
                 });
 
@@ -440,6 +429,17 @@
                 }
                 return header.name === fieldName;
             })[0].value; //TODO check for undefiend
+        };
+        var isMailSecure = function(json) {
+            secMail = false;
+            console.log("is Mail secure?");
+            if (json.result.snippet.indexOf("-----BEGIN PGP MESSAGE-----") > -1 && json.result.snippet != undefined ) {
+                secMail = true;
+            }else {
+                secMail = false;
+            }
+            console.log("isMailSecure " + secMail);
+            return secMail;
         };
 
         $scope.emailsObject = [{}];
@@ -473,7 +473,7 @@
 
                     //console.log(batchRequest);
                     batchRequest.then(function(jsonBulkMessages){
-                        console.log(jsonBulkMessages.result);
+                        //console.log(jsonBulkMessages.result);
 
                         $.each(jsonBulkMessages.result, function(i, item) {
 
@@ -482,9 +482,18 @@
                             subject = extractField(item, "Subject");
                             date = extractField(item, "Date");
 
+                            if (item.result.snippet !=undefined ) {
+                                //console.log("snippet is there");
+                                isSecure = false;
+                                isSecure = isMailSecure(item);
+                            } else {
+                                //console.log("snippet is not there");
+                            }
+
+
                             $scope.$apply(function(){
                                 //console.log("mailId: " + item.result.id + " subject: " + subject + " date: " + date + " from: " + from +" to: " +to);
-                                $scope.emailsObject.push({"mailId":item.result.id,"subject":subject , "date":date, "from":from,"to":to});
+                                $scope.emailsObject.push({"mailId":item.result.id,"subject":subject , "date":date, "from":from,"to":to,"secure":isSecure});
                             });
 
                         });
@@ -500,12 +509,12 @@
             });
         };
 
-        $scope.getEmailsBatch($scope.userEmail, 10);
+        $scope.getEmailsBatch($scope.userEmail, 25); //TODO filter out google hangouts from mails
 
     }]);
 
     /*single email controller (new,edit & delete )*/
-    app.controller('singleEmailController', [ '$scope' , 'flash' , '$http' , '$routeParams' , function ( $scope, flash, $http, $routeParams ) {
+    app.controller('singleEmailController', [ '$scope' , 'flash' , '$http' , '$routeParams','$cookieStore', function ( $scope, flash, $http, $routeParams, $cookieStore ) {
         $scope.param = $routeParams.param;
         console.log('params are - '+$scope.param);
 
@@ -525,36 +534,56 @@
                 'callback': function(jsonResponse, rawResponse) {
                     console.log(jsonResponse);
 
-                    var part = jsonResponse.payload.parts.filter(function(part) {
+                    if (jsonResponse.payload.parts != undefined){
+                        console.log("i have parts");
+                        var part = jsonResponse.payload.parts.filter(function(part) {
+                            console.log(part);
+                            encrypted = false;
+                            return part.mimeType == 'text/html';
+                        });
+                    }else if (jsonResponse.payload.body.data != undefined){
+                        console.log("i DONT have parts i must be encrypted");
+                        var part = jsonResponse.payload.body.data;
                         console.log(part);
-                        return part.mimeType == 'text/html';
-                    });
+                        encrypted = true;
+                    }
 
                     $scope.$apply(function(){
                         $scope.from = extractField(jsonResponse, "From");
                         $scope.to = extractField(jsonResponse, "To");
                         $scope.subject = extractField(jsonResponse, "Subject");
-                        $scope.messageBody = atob(part[0].body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                    });
+                        ph = $cookieStore.get("ph");
 
+                        if (encrypted) {
+                            console.log("I should decrypt this:");
+                            encryptedMessage = atob(part.replace(/-/g, '+').replace(/_/g, '/'));
+
+                            var key = $cookieStore.get('privkey');
+
+                            var privateKey = openpgp.key.readArmored(key).keys[0];
+
+                            privateKey.decrypt(ph); //TODO make this work with the normal passphrase
+                            pgpMessage = openpgp.message.readArmored(encryptedMessage);
+
+                             openpgp.decryptMessage(privateKey, pgpMessage).then(function(plaintext) {
+                                 console.log("Success! :)");
+                                 console.log(plaintext);
+                                 $scope.$apply(function(){
+
+                                     $scope.messageBody = plaintext;
+                                 });
+                             }).catch(function(error) {
+                                 console.log("Something went wrong");
+                                 console.log(error);
+                             });
+                        } else {
+                            $scope.messageBody = atob(part[0].body.data.replace(/-/g, '+').replace(/_/g, '/'));
+                        }
+                    });
                 }
             });
         }
-
-        /*var key = '-----BEGIN PGP PRIVATE KEY BLOCK ... END PGP PRIVATE KEY BLOCK-----';
-        var privateKey = openpgp.key.readArmored(key).keys[0];
-        privateKey.decrypt('passphrase');
-
-        var pgpMessage = '-----BEGIN PGP MESSAGE ... END PGP MESSAGE-----';
-        pgpMessage = openpgp.message.readArmored(pgpMessage);
-
-        openpgp.decryptMessage(privateKey, pgpMessage).then(function(plaintext) {
-            // success
-        }).catch(function(error) {
-            // failure
-        });*/
         $scope.getMessage($scope.param);
-
     }]);
 
     /*initialize bootstrap*/

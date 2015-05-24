@@ -1,69 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="408ce395-ceb9-4da4-adb0-c0e4ab9d432d" name="Default" comment="added PHP api, encryption working, sending crap todo">
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\Google_Client.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_AssertionCredentials.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_Auth.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_AuthNone.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_LoginTicket.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_OAuth2.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_P12Signer.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_PemVerifier.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_Signer.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\auth\Google_Verifier.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\cache\Google_ApcCache.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\cache\Google_Cache.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\cache\Google_FileCache.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\cache\Google_MemcacheCache.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\config.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_AdexchangebuyerService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_AdsenseService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_AdsensehostService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_AnalyticsService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_BigqueryService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_BloggerService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_BooksService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_CalendarService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_ComputeService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_CustomsearchService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_DriveService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_FreebaseService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_FusiontablesService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_GanService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_LatitudeService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_LicensingService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_ModeratorService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_Oauth2Service.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_OrkutService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_PagespeedonlineService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_PlusMomentsService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_PlusService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_PredictionService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_ShoppingService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_SiteVerificationService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_StorageService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_TaskqueueService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_TasksService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_TranslateService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_UrlshortenerService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_WebfontsService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\contrib\Google_YoutubeService.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\custom\config.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\custom\functions.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\external\URITemplateParser.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\Google_CacheParser.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\Google_CurlIO.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\Google_HttpRequest.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\Google_IO.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\Google_REST.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\io\cacerts.pem" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_BatchRequest.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_MediaFileUpload.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_Model.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_Service.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_ServiceResource.php" afterPath="" />
-      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\src\service\Google_Utils.php" afterPath="" />
+    <list default="true" id="408ce395-ceb9-4da4-adb0-c0e4ab9d432d" name="Default" comment="EMAIL SENDING WORKS + deleted phg gapi">
+      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\json\emails.json" afterPath="" />
+      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\json\message\10824581.json" afterPath="" />
+      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\json\message\50223456.json" afterPath="" />
+      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\json\message\74838344.json" afterPath="" />
+      <change type="DELETED" beforePath="C:\xampp\htdocs\SecureEmail\json\message\90345551.json" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/default.css" afterPath="$PROJECT_DIR$/css/default.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/emails/index.html" afterPath="$PROJECT_DIR$/views/emails/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.php" afterPath="$PROJECT_DIR$/index.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/ng.app.js" afterPath="$PROJECT_DIR$/js/ng.app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -90,31 +36,69 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ng.app.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ng.app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/ng.app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.75346535" vertical-offset="4237" max-vertical-offset="6239">
-              <caret line="422" column="43" selection-start-line="422" selection-start-column="43" selection-end-line="422" selection-end-column="43" />
+            <state vertical-scroll-proportion="-6.6896553" vertical-offset="4668" max-vertical-offset="6766">
+              <caret line="486" column="40" selection-start-line="486" selection-start-column="40" selection-end-line="486" selection-end-column="40" />
               <folding>
-                <element signature="e#313#1084#0" expanded="false" />
+                <element signature="e#1198#1947#0" expanded="false" />
                 <element signature="e#2026#2155#0" expanded="false" />
-                <element signature="e#2276#3029#0" expanded="false" />
-                <element signature="e#4981#5601#0" expanded="false" />
-                <element signature="e#6929#7277#0" expanded="false" />
-                <element signature="e#10606#11321#0" expanded="false" />
-                <element signature="e#13593#14625#0" expanded="false" />
-                <element signature="e#14668#15341#0" expanded="false" />
-                <element signature="e#16679#19942#0" expanded="false" />
+                <element signature="e#3143#4652#0" expanded="false" />
+                <element signature="e#4760#5380#0" expanded="false" />
+                <element signature="e#5488#6524#0" expanded="false" />
+                <element signature="e#6708#7056#0" expanded="false" />
+                <element signature="e#8733#10911#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/emails/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="238">
+              <caret line="2" column="126" selection-start-line="2" selection-start-column="126" selection-end-line="2" selection-end-column="126" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="default.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/default.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2820" max-vertical-offset="3859">
+              <caret line="219" column="28" selection-start-line="219" selection-start-column="28" selection-end-line="219" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="1428">
+              <caret line="2" column="234" selection-start-line="2" selection-start-column="159" selection-end-line="2" selection-end-column="234" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/email/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.2692308" vertical-offset="0" max-vertical-offset="221">
+              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.8846154" vertical-offset="1003" max-vertical-offset="2074">
-              <caret line="68" column="92" selection-start-line="68" selection-start-column="86" selection-end-line="68" selection-end-column="92" />
+            <state vertical-scroll-proportion="0.12255407" vertical-offset="969" max-vertical-offset="2125">
+              <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -150,8 +134,6 @@
         <option value="$PROJECT_DIR$/views/signup.html" />
         <option value="$PROJECT_DIR$/js/encrypt.js" />
         <option value="$PROJECT_DIR$/js/openpgp.js" />
-        <option value="$PROJECT_DIR$/css/default.css" />
-        <option value="$PROJECT_DIR$/views/emails/index.html" />
         <option value="$PROJECT_DIR$/views/email/index.html" />
         <option value="$PROJECT_DIR$/js/functions.js" />
         <option value="$PROJECT_DIR$/api.php" />
@@ -159,10 +141,12 @@
         <option value="$PROJECT_DIR$/includes/ChromePhp.php" />
         <option value="$PROJECT_DIR$/Services/api.php" />
         <option value="$PROJECT_DIR$/views/index.html" />
-        <option value="$PROJECT_DIR$/index.php" />
         <option value="$PROJECT_DIR$/js/google-plus-signin.js" />
         <option value="$PROJECT_DIR$/services/api.php" />
+        <option value="$PROJECT_DIR$/css/default.css" />
+        <option value="$PROJECT_DIR$/views/emails/index.html" />
         <option value="$PROJECT_DIR$/js/ng.app.js" />
+        <option value="$PROJECT_DIR$/index.php" />
       </list>
     </option>
   </component>
@@ -229,7 +213,21 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SecureEmail" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="SecureEmail" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -361,12 +359,18 @@
       <option name="project" value="LOCAL" />
       <updated>1432414281068</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="EMAIL SENDING WORKS + deleted phg gapi">
+      <created>1432461550502</created>
+      <option name="number" value="00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1432461550502</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298969" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -375,7 +379,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24969843" sideWeight="0.4821029" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.178125" sideWeight="0.48657718" order="0" side_tool="true" content_ui="combo" x="726" y="58" width="227" height="894" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.178125" sideWeight="0.48657718" order="0" side_tool="true" content_ui="combo" x="726" y="58" width="227" height="894" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24969843" sideWeight="0.51789707" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21698113" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -415,7 +419,8 @@
     <MESSAGE value="getting key pair creating to work." />
     <MESSAGE value="fixing some other stuff. now its beginning to look nice!" />
     <MESSAGE value="added PHP api, encryption working, sending crap todo" />
-    <option name="LAST_COMMIT_MESSAGE" value="added PHP api, encryption working, sending crap todo" />
+    <MESSAGE value="EMAIL SENDING WORKS + deleted phg gapi" />
+    <option name="LAST_COMMIT_MESSAGE" value="EMAIL SENDING WORKS + deleted phg gapi" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -435,6 +440,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="6" column="72" selection-start-line="6" selection-start-column="64" selection-end-line="6" selection-end-column="72" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -451,15 +457,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -482,6 +486,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="6" column="72" selection-start-line="6" selection-start-column="64" selection-end-line="6" selection-end-column="72" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -498,15 +503,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="211" column="43" selection-start-line="211" selection-start-column="43" selection-end-line="211" selection-end-column="43" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -530,6 +533,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="3" column="42" selection-start-line="3" selection-start-column="42" selection-end-line="3" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -538,15 +542,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -562,6 +564,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -570,15 +573,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -587,6 +588,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -595,15 +597,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="197" column="44" selection-start-line="197" selection-start-column="44" selection-end-line="197" selection-end-column="44" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -627,15 +627,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="218" column="0" selection-start-line="218" selection-start-column="0" selection-end-line="219" selection-end-column="34" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -659,15 +657,13 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
           <caret line="218" column="0" selection-start-line="218" selection-start-column="0" selection-end-line="219" selection-end-column="34" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -730,25 +726,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/default.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3133" max-vertical-offset="3774">
-          <caret line="198" column="0" selection-start-line="198" selection-start-column="0" selection-end-line="198" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="850">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/email/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="221">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -785,20 +766,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/emails/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.2692308" vertical-offset="0" max-vertical-offset="221">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.354" vertical-offset="428" max-vertical-offset="1428">
-          <caret line="46" column="28" selection-start-line="46" selection-start-column="28" selection-end-line="46" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/google-plus-signin.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.56237626" vertical-offset="350" max-vertical-offset="1360">
@@ -815,29 +782,59 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.php">
+    <entry file="file://$PROJECT_DIR$/css/default.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.8846154" vertical-offset="1003" max-vertical-offset="2074">
-          <caret line="68" column="92" selection-start-line="68" selection-start-column="86" selection-end-line="68" selection-end-column="92" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2820" max-vertical-offset="3859">
+          <caret line="219" column="28" selection-start-line="219" selection-start-column="28" selection-end-line="219" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/ng.app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.75346535" vertical-offset="4237" max-vertical-offset="6239">
-          <caret line="422" column="43" selection-start-line="422" selection-start-column="43" selection-end-line="422" selection-end-column="43" />
+        <state vertical-scroll-proportion="-6.6896553" vertical-offset="4668" max-vertical-offset="6766">
+          <caret line="486" column="40" selection-start-line="486" selection-start-column="40" selection-end-line="486" selection-end-column="40" />
           <folding>
-            <element signature="e#313#1084#0" expanded="false" />
+            <element signature="e#1198#1947#0" expanded="false" />
             <element signature="e#2026#2155#0" expanded="false" />
-            <element signature="e#2276#3029#0" expanded="false" />
-            <element signature="e#4981#5601#0" expanded="false" />
-            <element signature="e#6929#7277#0" expanded="false" />
-            <element signature="e#10606#11321#0" expanded="false" />
-            <element signature="e#13593#14625#0" expanded="false" />
-            <element signature="e#14668#15341#0" expanded="false" />
-            <element signature="e#16679#19942#0" expanded="false" />
+            <element signature="e#3143#4652#0" expanded="false" />
+            <element signature="e#4760#5380#0" expanded="false" />
+            <element signature="e#5488#6524#0" expanded="false" />
+            <element signature="e#6708#7056#0" expanded="false" />
+            <element signature="e#8733#10911#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/email/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308" vertical-offset="0" max-vertical-offset="221">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="1428">
+          <caret line="2" column="234" selection-start-line="2" selection-start-column="159" selection-end-line="2" selection-end-column="234" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/emails/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="238">
+          <caret line="2" column="126" selection-start-line="2" selection-start-column="126" selection-end-line="2" selection-end-column="126" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12255407" vertical-offset="969" max-vertical-offset="2125">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

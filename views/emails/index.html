@@ -1,6 +1,7 @@
 <div class="email-list">
     <ul class="list-group" >
-        <li ng-repeat="item in emailsObject" class="list-group-item" data-email-id="{{item.mailId}}">
+        <li ng-repeat="item in emailsObject" class="list-group-item" data-email-id="{{item.mailId}}" ng-class"{item.secure, encrypted}">
+            <span ng-show="{{item.secure}}" class="badge bg-warning iconified"><span class="glyphicon glyphicon-lock" title="Encrypted"></span></span>
             <span class="badge">{{item.date}}</span>
             <a title="From: {{item.from}} // To: {{item.to}}" href="#/email/{{item.mailId}}" class="mail">{{item.subject}}</a>
         </li>
