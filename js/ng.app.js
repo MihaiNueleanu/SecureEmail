@@ -1,3 +1,8 @@
+//TODO implement better variable sharing
+//TODO test tinyMCE
+//TODO fix routing (rerouting to home)
+//TODO fix keypair generation and retrieval using RAW passphrase
+
 (function () {
 
     /*creating app (currently adding coockies and route)*/
@@ -72,6 +77,19 @@
     app.factory("ppsService", ['$http', '$location', '$cookieStore','$rootScope', function($http ,$location, $cookieStore, $rootScope) {
         var serviceBase = 'services/'
         var obj = {};
+
+        var items = [];
+
+        obj.addItem = function(item) {
+            items.push(item);
+        };
+        obj.removeItem = function(item) {
+            var index = items.indexOf(item);
+            items.splice(index, 1);
+        };
+        obj.items = function() {
+            return items;
+        };
 
         obj.createAccount = function (uid , ps , ph , pubkey , privkey) {
             console.log("IN THE FACTORY WE HAVE: uid:" + uid + " ,ps: " + ps + " ,ph: " + ph + " ,AND THE KEYS...");

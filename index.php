@@ -92,10 +92,16 @@
     <div ng-view ng-cloak></div>
 
     <!-- loading angular scripts -->
-    <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular.js"></script>
-    <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-cookies.js"></script>
-    <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-route.js"></script>
-    <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-sanitize.js"></script>
+    <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular.js"></script>
+    <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-cookies.js"></script>
+    <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-route.js"></script>
+    <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-sanitize.js"></script>
+
+    <!-- Google Sign In -->
+    <script type="text/javascript" src="js/google-plus-signin.js"></script>
+
+    <!-- tinyMCE -->
+    <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 
     <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -108,11 +114,14 @@
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>
 
-    <!-- Google Sign In -->
-    <script type="text/javascript" src="js/google-plus-signin.js"></script>
-
     <!-- angularJS scripts -->
     <script type="text/javascript" src="js/ng.app.js"></script>
+
+    <script type="text/javascript">
+        tinymce.init({
+            selector: "textarea"
+        });
+    </script>
 
 </body>
 </html>
