@@ -77,7 +77,8 @@
                         </div>
                         <div class="form-group">
                             <label for="mailContent">Message</label>
-                            <textarea class="form-control" rows="5" id="mailContent" ng-model="mailContent" ng-minlength="1" placeholder="Write your secret message here" required></textarea>
+                            {{mailContent}}
+                            <textarea class="form-control" rows="5" id="mailContent" ui-tinymce ng-model="mailContent" ng-minlength="1" placeholder="Write your secret message here" required></textarea>
                         </div>
                     </form>
                 </div>
@@ -101,15 +102,16 @@
     <script type="text/javascript" src="js/google-plus-signin.js"></script>
 
     <!-- tinyMCE -->
-    <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
+    <script type="text/javascript" src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
+    <script type="text/javascript" src="js/ng.tinymce.js"></script>
 
     <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!-- loading pgp + crypto hash(SHA-1) -->
     <script type="text/javascript" src="js/openpgp.js"></script>
-    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+    <script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
 
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>
@@ -118,9 +120,9 @@
     <script type="text/javascript" src="js/ng.app.js"></script>
 
     <script type="text/javascript">
-        tinymce.init({
-            selector: "textarea"
-        });
+            tinymce.init({
+                selector: "textarea"
+            });
     </script>
 
 </body>

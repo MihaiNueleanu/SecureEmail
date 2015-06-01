@@ -1,20 +1,18 @@
 //TODO implement better variable sharing
-//TODO test tinyMCE
-//TODO fix routing (rerouting to home)
-//TODO fix keypair generation and retrieval using RAW passphrase
 //TODO test the signin success validation.
 
 (function () {
 
     /*creating app (currently adding coockies and route)*/
-    var app = angular.module('app', ['ngCookies', 'ngRoute', 'ngSanitize',  'directive.g+signin']);
+    var app = angular.module('app', ['ngCookies', 'ngRoute', 'ngSanitize', 'ui.tinymce', 'directive.g+signin']);
 
     /* whenever change page or load ensuring user is logged in if not redirecting to home */
-    app.run(function($rootScope, $location) {
+    app.run(function($rootScope, $location, $cookieStore) {
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-            if ($rootScope.signedIn) {
-
+            if ($cookieStore.get("signedIn") == "true") {
+                console.log("cookie check value is true");
             }else{
+                console.log("cookie check value is not true ill redirect just in case.");
                 $location.path("/home");
             }
         });
@@ -257,7 +255,8 @@
             $scope.displayName = null;
             $scope.userImage = null;
 
-            $rootScope.signedIn = false;
+            //$rootScope.signedIn = false;
+            $cookieStore.put("signedIn","false");
             $('#signin .step.step-1').removeClass('hidden');
             $('#signin .step.step-1').removeClass('hidden');
         };
@@ -299,14 +298,16 @@
             $('#signup .step.step-2').removeClass('hidden');
             $('#signin .step.step-1').addClass('hidden');
             $('#signin .step.step-2').removeClass('hidden');
-            $rootScope.signedIn = true;
+            //$rootScope.signedIn = true;
+            $cookieStore.put("signedIn","true");
             $scope.getUserInfo();
         });
 
         $rootScope.$on('event:google-plus-signin-failure', function (event,authResult) {
             console.log("RUN: user signed out (redirecting to home)");
             $('#signup .step.step-1').removeClass('hidden');
-            $rootScope.signedIn = false;
+            //$rootScope.signedIn = false;
+            $cookieStore.put("signedIn","false");
             $location.path("/home");
         });
 
@@ -339,7 +340,7 @@
             var options = {
                 numBits: 2048,
                 userId: userId,
-                passphrase: hash
+                passphrase: $scope.passphrase
             };
 
             openpgp.generateKeyPair(options).then(function(keypair) {
@@ -420,6 +421,8 @@
         });
 
         $scope.sendMail = function() {
+            //tinyMCE.triggerSave();
+
             if ($scope.canEncrypt) {
                 console.log("Trying to encrypted message")
                 $scope.encryptedMailContent;
@@ -622,7 +625,7 @@
                         $scope.from = extractField(jsonResponse, "From");
                         $scope.to = extractField(jsonResponse, "To");
                         $scope.subject = extractField(jsonResponse, "Subject");
-                        ph = $cookieStore.get("ph");
+                        $scope.passphrase = $rootscope.passphrase;
 
                         if (encrypted) {
                             console.log("I should decrypt this:");
@@ -632,7 +635,7 @@
 
                             var privateKey = openpgp.key.readArmored(key).keys[0];
 
-                            privateKey.decrypt(ph); //TODO make this work with the normal passphrase
+                            privateKey.decrypt($scope.passphrase);
                             pgpMessage = openpgp.message.readArmored(encryptedMessage);
 
                              openpgp.decryptMessage(privateKey, pgpMessage).then(function(plaintext) {
