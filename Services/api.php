@@ -60,6 +60,33 @@ class API extends REST {
         }
     }
 
+    private  function bruteForceProtection() {
+        $first_failed_login = 0; // retrieve from DB
+        $failed_login_count = 0; // retrieve from DB
+        $bad_login_limit = 0;
+        $lockout_time = 10;
+        if(
+            ($failed_login_count >= $bad_login_limit)
+            &&
+            (time() - $first_failed_login < $lockout_time)
+        ) {
+            echo "You are currently locked out.";
+            exit; // or return, or whatever.
+        } else if(true) { /* login is invalid-true todo make it work */
+            if( time() - $first_failed_login > $lockout_time ) {
+                // first unsuccessful login since $lockout_time on the last one expired
+                $first_failed_login = time(); // commit to DB
+                $failed_login_count = 1; // commit to db
+            } else {
+                $failed_login_count++; // commit to db.
+            }
+            exit; // or return, or whatever.
+        } else {
+            // user is not currently locked out, and the login is valid.
+            // do stuff
+        }
+    }
+
     private function getKeyPair(){
         $uid = (string)$_GET['uid'];
         $ps = (string)$_GET['ps'];

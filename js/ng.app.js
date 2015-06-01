@@ -2,6 +2,7 @@
 //TODO test tinyMCE
 //TODO fix routing (rerouting to home)
 //TODO fix keypair generation and retrieval using RAW passphrase
+//TODO test the signin success validation.
 
 (function () {
 
@@ -395,7 +396,7 @@
     }]);
 
     /*compose mail form controller*/
-    app.controller('composeMailController', ['$scope', 'flash', '$cookieStore','$rootScope', 'ppsService', function ($scope, flash, $cookieStore, $rootScope, ppsService) {
+    app.controller('composeMailController', ['$scope', 'flash', '$location', '$cookieStore','$rootScope', 'ppsService', function ($scope, flash, $location, $cookieStore, $rootScope, ppsService) {
         $scope.pubkey = $cookieStore.get('pubkey');
         $scope.privkey = $cookieStore.get('privkey');
 
@@ -456,7 +457,7 @@
                     });
                     console.log("executing request");
                     request.execute(callback);
-
+                    $location.path("/emails");
                 };
                 var to = $scope.mailTo,
                     subject = $scope.mailSubject,
