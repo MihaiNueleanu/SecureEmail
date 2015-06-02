@@ -50,44 +50,92 @@ class API extends REST {
                 $sql = "INSERT INTO secureemail.credentials (uid, ps, ph, pubkey, privkey) VALUES ('".$uid."','".$ps."','".$ph."','".$pubkey."','".$privkey."')";
 
                 if ($this->mysqli->query($sql) === TRUE) {
-                    $success = array('status' => "Success", "msg" => "Customer Created Successfully.", "data" => $uid);
+                    $success = array('status' => "Success", "msg" => "user created successfully.", "data" => $uid);
                     $this->response($this->json($success),200);
                 } else {
-                    $this->response('',204);	//"No Content" status
+                    $error = array('status' => "error", "msg" => "user already exists and cannot be created.", "data" => $uid);
+                    $this->response($this->json($error),204);	//"No Content" status
                 }
                 $this->mysqli->close();
             }
         }
     }
 
-    private  function bruteForceProtection() {
-        $first_failed_login = 0; // retrieve from DB
-        $failed_login_count = 0; // retrieve from DB
+    //TODO test bruteforce protection, add frontend reaction to the response.
+    private  function getKeyPair() {
+        $uid = (string)$_GET['uid'];
+        $ps = (string)$_GET['ps'];
+        $ph = (string)$_GET['ph'];
         $bad_login_limit = 0;
         $lockout_time = 10;
-        if(
-            ($failed_login_count >= $bad_login_limit)
-            &&
-            (time() - $first_failed_login < $lockout_time)
-        ) {
-            echo "You are currently locked out.";
-            exit; // or return, or whatever.
-        } else if(true) { /* login is invalid-true todo make it work */
-            if( time() - $first_failed_login > $lockout_time ) {
-                // first unsuccessful login since $lockout_time on the last one expired
-                $first_failed_login = time(); // commit to DB
-                $failed_login_count = 1; // commit to db
+
+        ffLogTime ;
+        fLogCount ;
+
+        /* Getting the first failed log attempt and the failed log count*/
+        if(!empty($uid)){
+            $sql = "SELECT ffLogTime,fLogCount FROM secureemail.credentials WHERE uid = '".$uid."' LIMIT 1";
+            $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
+
+            if($r->num_rows > 0) {
+                $result = $r->fetch_assoc();
+                $ffLogTime = $result[0];
+                $fLogCount = $result[1];
             } else {
-                $failed_login_count++; // commit to db.
+                $ffLogTime = null;
+                $fLogCount = null;
             }
-            exit; // or return, or whatever.
+            $this->mysqli->close();
+        }
+
+        /* if user is "locked out" */
+        if((fLogCount >= $bad_login_limit) && (time() - ffLogTime < $lockout_time)) {
+            $error = array('status' => "error", "msg" => "user is currently locked out of the system", "data" => $uid);
+            $this->response($this->json($error), 204);	// If no records "No Content" status
+
+        /* user is not! "locked out" */
         } else {
-            // user is not currently locked out, and the login is valid.
-            // do stuff
+            if(!empty($uid) and !empty($ps) and !empty($ph) ){
+                $sql = "SELECT pubkey, privkey FROM secureemail.credentials WHERE uid = '".$uid."' AND ph = '".$ph."' LIMIT 1";
+                $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
+
+                if($r->num_rows > 0) {
+                    /* login success and keypair found */
+                    $result = $r->fetch_assoc();
+                    $this->response($this->json($result), 200);
+                } else {
+                    if( time() - $ffLogTime > $lockout_time ) {
+                        /* first unsuccessful login since $lockout_time on the last one expired */
+                        $ffLogTime = time(); // TODO commit to DB
+                        $fLogCount = 1; // TODO commit to db
+
+                        $sql = "UPDATE secureemail.credentials SET ffLogTime='".$ffLogTime."', fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
+                        if ($this->mysqli->query($sql) === TRUE) {
+                            $error = array('status' => "error", "msg" => "logged first failed login data to database.", "data" => $uid);
+                        } else {
+                            $error = array('status' => "error", "msg" => "Error while logging: first failed login data to database.", "data" => $uid);
+                        }
+
+                    } else {
+                        /* yet another unsuccessful login since */
+                        $fLogCount ++; // commit to db.
+
+                        $sql = "UPDATE secureemail.credentials SET fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
+                        if ($this->mysqli->query($sql) === TRUE) {
+                            $error = array('status' => "error", "msg" => "logged yet another failed login.", "data" => $uid);
+                        } else {
+                            $error = array('status' => "error", "msg" => "Error while logging: yet another failed login.", "data" => $uid);
+                        }
+                    }
+                    $this->response($this->json($error), 204);	// If no records "No Content" status
+                }
+                $this->mysqli->close();
+            }
+
         }
     }
 
-    private function getKeyPair(){
+    /*private function getKeyPair(){
         $uid = (string)$_GET['uid'];
         $ps = (string)$_GET['ps'];
         $ph = (string)$_GET['ph'];
@@ -105,7 +153,7 @@ class API extends REST {
             }
             $this->mysqli->close();
         }
-    }
+    }*/
 
     private function getPublicKey(){
         $uid = (string)$_GET['uid'];
@@ -119,7 +167,8 @@ class API extends REST {
                 //ChromePhp::log("REST-API: GOT THIS: " . $this->json($result));
                 $this->response($this->json($result), 200);
             } else {
-                $this->response('', 204);	// If no records "No Content" status
+                $error = array('status' => "error", "msg" => "user does not exist or does not have a key pair", "data" => $uid);
+                $this->response($this->json($error),204);	//"No Content" status
             }
             $this->mysqli->close();
         }

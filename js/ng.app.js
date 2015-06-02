@@ -1,5 +1,7 @@
 //TODO implement better variable sharing
-//TODO test the signin success validation.
+//TODO test the signin success/failure validation based on API responses
+//TODO fix all functions that break after this last update.
+//TODO fix all outputs based on new responses from API.
 
 (function () {
 
