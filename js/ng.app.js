@@ -28,7 +28,7 @@
         /*Event listener for flash*/
         $rootScope.$on('event:show-flash', function () {
             console.log("GOT AN EVENT I SHOULD SHOW THE FLASH MESSAGE!!!");
-            $('#flash').stop().removeClass("hidden").show();
+            $('#flash').removeClass("hidden").show();
             $timeout(function () {
                 $('#flash').stop().hide();
             }, 3000);
@@ -121,7 +121,7 @@
                     console.log(result);
                     return result;
                 } else {
-                    flash.setMessage({"status":"error", "content":"cannot create user, user already exists, try signing in instead"});
+                    flash.setMessage({"status":"error", "message":"cannot create user, user already exists, try signing in instead"});
                     console.log("ERROR: Unable to create account, account already exists");
                     $cookieStore.put("accountExists","true");
                     $location.path("/home");
@@ -142,7 +142,7 @@
                     $location.path("/emails");
                     return result;
                 } else {
-                    flash.setMessage({"status":"error", "content":"Unable to retrieve key pair, passphrase missmatch"});
+                    flash.setMessage(result.data);
                     console.log("ERROR: Unable to retrieve key pair");
                     $location.path("/home");
                 }
@@ -168,7 +168,7 @@
         return obj;
     }]);
 
-    /*configuring route provider (views)*/
+    /* configuring route provider (views) */
     app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
         when('/emails', {
@@ -180,37 +180,36 @@
             controller: 'singleEmailController'
         }).
         when('/home', {
-            templateUrl: 'views/index.html',
-            controller: 'mainController'
+            templateUrl: 'views/index.html'
         }).
         otherwise({
             redirectTo: '/home'
         });
     }]);
 
-    /*configuring data service for bindings*/
+    /* configuring flash messages based on API call responses */
     app.factory("flash", function ($rootScope) {
         var messageContent;
         return {
-            setMessage: function (message) {
-                console.log("FLASH: setMessage() CALLED!!!");
-                //console.log(message);
+            setMessage : function (message) {
+                console.log("FLASH: Message.status: " + message.status + " ,Message.message: " + message.message);
 
                 if (message.status == "success") {
-                    console.log("it is a success message!!!!!!");
+                    $('#flash').removeClass("alert-danger").addClass("alert-success");
                 } else {
-                    console.log("it is an error message!!!!!!");
+                    $('#flash').removeClass("alert-success").addClass("alert-danger");
                 }
 
-                messageContent = message.content;
-                console.log("messageContent: " + messageContent);
-
-                $rootScope.$broadcast('event:show-flash');
+                if (messageContent != message.message) {
+                    messageContent = message.message;
+                    $rootScope.$broadcast('event:message-updated');
+                }
+                return messageContent;
             },
-            getMessage: function () {
+            getMessage:function(){
                 return messageContent;
             }
-        };
+        }
     });
 
     /*navigation (list of links in bottom) + SSO Validation call*/
@@ -311,6 +310,15 @@
         };
 
         /* Event listeners */
+        $rootScope.$on('event:message-updated', function() {
+            /*$timeout(function () {*/
+                $scope.messageContent = flash.getMessage();
+                console.log("MAINCONTROLLER: Message content updated!" + $scope.messageContent);
+                $rootScope.$broadcast('event:show-flash');
+                $rootScope.$broadcast('event:hide-loader');
+            /*}, 500);*/
+        });
+
         $rootScope.$on('event:google-plus-signin-success', function () {
             console.log("RUN: user is signed in");
             $('#signup .step.step-1').addClass('hidden');
@@ -376,11 +384,11 @@
         };
 
         $scope.$watch('passphrase', function() {
-            console.log("changing the passphrase in the rootscope so it could be shared");
+            //console.log("changing the passphrase in the rootscope so it could be shared");
             $rootScope.passphrase = $scope.passphrase;
-            console.log("***********************************************");
-            console.log("$rootScope.passphrase" + $rootScope.passphrase);
-            console.log("***********************************************");
+            //console.log("***********************************************");
+            //console.log("$rootScope.passphrase" + $rootScope.passphrase);
+            //console.log("***********************************************");
         });
     }]);
 
@@ -396,24 +404,28 @@
         }
 
         $scope.$watch('passphrase', function() {
-            console.log("changing the passphrase in the rootscope so it could be shared");
+            //console.log("changing the passphrase in the rootscope so it could be shared");
             $rootScope.passphrase = $scope.passphrase;
-            console.log("***********************************************");
-            console.log("$rootScope.passphrase" + $rootScope.passphrase);
-            console.log("***********************************************");
+            //console.log("***********************************************");
+            //console.log("$rootScope.passphrase" + $rootScope.passphrase);
+            //console.log("***********************************************");
         });
 
         $scope.getKeyPair = function() {
-            console.log("SIGNINCONTROLLER: trying to get a key pair");
-            var userId = $rootScope.userEmail;
+            if ($cookieStore.get("signedIn") == "true") {
+                console.log("SIGNINCONTROLLER: trying to get a key pair");
+                var userId = $rootScope.userEmail;
 
-            console.log("getKeyPair() - $rootScope.userEmail: " + $rootScope.userEmail);
-            var salt = btoa(userId);
-            var temp = CryptoJS.SHA1($scope.passphrase + salt);
-            var hash = temp.toString();
+                console.log("getKeyPair() - $rootScope.userEmail: " + $rootScope.userEmail);
+                var salt = btoa(userId);
+                var temp = CryptoJS.SHA1($scope.passphrase + salt);
+                var hash = temp.toString();
 
-            $cookieStore.put ("ph",hash);
-            ppsService.getKeyPair(userId , salt , hash);
+                $cookieStore.put ("ph",hash);
+                ppsService.getKeyPair(userId , salt , hash);
+            } else {
+                flash.setMessage({"status":"error","message":"Please make sure you are currently signed-in to your service provider "})
+            }
         };
 
         /* Event listener */
@@ -496,7 +508,6 @@
                     });
                     console.log("executing request");
                     request.execute(callback);
-                    flash.setMessage("Mail sent successfully!");
                     $location.path("/emails");
                 };
                 var to = $scope.mailTo,
@@ -511,8 +522,9 @@
 
                 sendMessage(email, function (arguments) {
                     console.log(arguments);
+                    console.log("mail Sent success!");
+                    flash.setMessage({"status":"success","message":"mail sent successfully"});
                 });
-
             });
         }
     }]);
@@ -533,14 +545,14 @@
         var extractField = function(json, fieldName) {
             return json.result.payload.headers.filter(function(header) {
                 if (header.name === fieldName) {
-                    console.log("Value of: " + header.name + "  is: " + header.value);
+                    //console.log("Value of: " + header.name + "  is: " + header.value);
                 }
                 return header.name === fieldName;
             })[0].value; //TODO check for undefiend
         };
         var isMailSecure = function(json) {
             secMail = false;
-            console.log("is Mail secure?");
+            //console.log("is Mail secure?");
             if (json.result.snippet.indexOf("-----BEGIN PGP MESSAGE-----") > -1 && json.result.snippet != undefined ) {
                 secMail = true;
             }else {
@@ -553,6 +565,7 @@
         $scope.emailsObject = [{}];
         console.log("in the emails controller for whatever reason!");
         $rootScope.$broadcast('event:show-loader');
+
         $scope.getEmailsBatch = function(userEmail, maxResults){
             gapi.client.request({
                 'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults='+maxResults,

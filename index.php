@@ -42,10 +42,10 @@
         </div>
     </nav>
 
-    <div id="flash" class="alert alert-danger hidden" ng-cloak>
+    <div id="flash" class="alert hidden" ng-cloak>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span class="sr-only">Error:</span>
-        {{flash.getMessage()}}
+        {{messageContent}}
     </div>
 
     <div id="loading-spinner" class="alert">
@@ -66,18 +66,16 @@
                     <form id="compose-mail-form" name="compose-mail-form" novalidate >
                         <div class="form-group ">
                             <label for="To">Email address</label>
-                            <input type="text" class="form-control" id="To" ng-model="mailTo" placeholder="someone@somewhere.com" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur': 0} }" required>
+                            <input type="email" class="form-control" id="To" ng-model="mailTo" placeholder="someone@somewhere.com" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 1000, 'blur': 0} }" required>
                             <span class="label label-success" ng-show="canEncrypt">Encrypted mail is possible</span>
                             <span class="label label-warning" ng-show="canEncrypt==false">Message will not be encrypted</span>
                         </div>
-
                         <div class="form-group ">
                             <label for="Subject">Subject</label>
                             <input type="text" class="form-control" id="Subject" ng-model="mailSubject" placeholder="Subject" required>
                         </div>
                         <div class="form-group">
                             <label for="mailContent">Message</label>
-                            {{mailContent}}
                             <textarea class="form-control" rows="5" id="mailContent" ui-tinymce ng-model="mailContent" ng-minlength="1" placeholder="Write your secret message here" required></textarea>
                         </div>
                     </form>
