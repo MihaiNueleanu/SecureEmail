@@ -38,11 +38,11 @@
                     <a class="bg-primary" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-pencil"></span> Compose mail</a>
                 </li>
 			</ul>
-            <span class="logged-user" title="log out">{{displayName}}<img class="g-user" src="{{userImage}}" /></span>
+            <span class="logged-user"  ng-show="{{displayName}}">{{displayName}}<img class="g-user" src="{{userImage}}" ng-show="{{userImage}}" /></span>
         </div>
     </nav>
 
-    <div class="alert alert-success" ng-show="flash.getMessage()" ng-cloak>
+    <div id="flash" class="alert alert-danger hidden" ng-cloak>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
         <span class="sr-only">Error:</span>
         {{flash.getMessage()}}
