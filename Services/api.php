@@ -6,10 +6,18 @@ class API extends REST {
 
     public $data = "";
 
-    const DB_SERVER = "127.0.0.1";
+    //Local settings
+    /*const DB_SERVER = "127.0.0.1";
     const DB_USER = "root";
     const DB_PASSWORD = "";
-    const DB = "secureemail";
+    const DB = "secureemail";*/
+
+    /*7appstudio.com.mysql*/
+    //Production settings
+    const DB_SERVER = "10.246.17.60:3306";
+    const DB_USER = "7appstudio_com";
+    const DB_PASSWORD = "fSQMUscx";
+    const DB = "7appstudio_com";
 
     private $db = NULL;
     private $mysqli = NULL;
@@ -47,14 +55,14 @@ class API extends REST {
             $privkey = (string)$args->privkey;
 
             if(!empty($uid) and !empty($ps) and !empty($ph) and !empty($pubkey) and !empty($privkey)){
-                $sql = "INSERT INTO secureemail.credentials (uid, ps, ph, pubkey, privkey) VALUES ('".$uid."','".$ps."','".$ph."','".$pubkey."','".$privkey."')";
+                $sql = "INSERT INTO 7appstudio_com.credentials (uid, ps, ph, pubkey, privkey) VALUES ('".$uid."','".$ps."','".$ph."','".$pubkey."','".$privkey."')";
 
                 if ($this->mysqli->query($sql) === TRUE) {
-                    $success = array('status' => "Success", "msg" => "user created successfully.", "data" => $uid);
+                    $success = array('status' => "success", "msg" => "user created successfully.", "data" => $uid);
                     $this->response($this->json($success),200);
                 } else {
                     $error = array('status' => "error", "msg" => "user already exists and cannot be created.", "data" => $uid);
-                    $this->response($this->json($error),204);	//"No Content" status
+                    $this->response($this->json($error),404);	//"No Content" status
                 }
                 $this->mysqli->close();
             }
@@ -66,37 +74,36 @@ class API extends REST {
         $uid = (string)$_GET['uid'];
         $ps = (string)$_GET['ps'];
         $ph = (string)$_GET['ph'];
-        $bad_login_limit = 0;
-        $lockout_time = 10;
-
-        ffLogTime ;
-        fLogCount ;
+        $bad_login_limit = 5;
+        $lockout_time = 10*60; //10 what?
 
         /* Getting the first failed log attempt and the failed log count*/
         if(!empty($uid)){
-            $sql = "SELECT ffLogTime,fLogCount FROM secureemail.credentials WHERE uid = '".$uid."' LIMIT 1";
+            $sql = "SELECT ffLogTime,fLogCount FROM 7appstudio_com.credentials WHERE uid = '".$uid."' LIMIT 1";
             $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
 
             if($r->num_rows > 0) {
                 $result = $r->fetch_assoc();
-                $ffLogTime = $result[0];
-                $fLogCount = $result[1];
+                $ffLogTime =  current($result);
+                $fLogCount = end($result);
             } else {
                 $ffLogTime = null;
                 $fLogCount = null;
             }
-            $this->mysqli->close();
         }
 
-        /* if user is "locked out" */
-        if((fLogCount >= $bad_login_limit) && (time() - ffLogTime < $lockout_time)) {
-            $error = array('status' => "error", "msg" => "user is currently locked out of the system", "data" => $uid);
-            $this->response($this->json($error), 204);	// If no records "No Content" status
+        /* if user is "locked out" - failed attempts exceeded limit and time limit not exceeded */
+        if(($fLogCount >= $bad_login_limit) && (strtotime(date('Y-m-d H:i:s')) - strtotime($ffLogTime) < $lockout_time)) {
+            //ChromePhp::log("REST-API:(user is locked out)");
+            $error = array('status' => "error", "message" => "user is currently locked out of the system", "data" => $uid);
+            $this->response($this->json($error), 404);	// If no records "No Content" status
 
         /* user is not! "locked out" */
         } else {
             if(!empty($uid) and !empty($ps) and !empty($ph) ){
-                $sql = "SELECT pubkey, privkey FROM secureemail.credentials WHERE uid = '".$uid."' AND ph = '".$ph."' LIMIT 1";
+                //ChromePhp::log("REST-API:(user is not locked out) uid: " . $uid ."ph: " .$ph);
+                $sql = "SELECT pubkey, privkey FROM 7appstudio_com.credentials WHERE uid = '".$uid."' AND ph = '".$ph."' LIMIT 1";
+                //ChromePhp::log("REST-API: GOT THIS: " . $this->json($result));
                 $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
 
                 if($r->num_rows > 0) {
@@ -104,30 +111,34 @@ class API extends REST {
                     $result = $r->fetch_assoc();
                     $this->response($this->json($result), 200);
                 } else {
-                    if( time() - $ffLogTime > $lockout_time ) {
+                    //ChromePhp::log("REST-API:(user is not locked out) PASSPHRASE MISSMATCH!");
+                    if( (strtotime(date('Y-m-d H:i:s')) - strtotime($ffLogTime)) > $lockout_time ) {
+                        //ChromePhp::log("REST-API: FIRST TIME?: ". (strtotime(date('Y-m-d H:i:s')) - strtotime($ffLogTime)));
                         /* first unsuccessful login since $lockout_time on the last one expired */
-                        $ffLogTime = time(); // TODO commit to DB
-                        $fLogCount = 1; // TODO commit to db
-
-                        $sql = "UPDATE secureemail.credentials SET ffLogTime='".$ffLogTime."', fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
+                        $ffLogTime = date('Y-m-d H:i:s');
+                        $fLogCount = 1;
+                        //ChromePhp::log("REST-API:(user is not locked out) PASSPHRASE MISSMATCH! ffLogTime: ".$ffLogTime);
+                        $sql = "UPDATE 7appstudio_com.credentials SET ffLogTime='".$ffLogTime."', fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
                         if ($this->mysqli->query($sql) === TRUE) {
-                            $error = array('status' => "error", "msg" => "logged first failed login data to database.", "data" => $uid);
+                            $error = array('status' => "error", "message" => "logged first failed login data to database.", "data" => $uid);
                         } else {
-                            $error = array('status' => "error", "msg" => "Error while logging: first failed login data to database.", "data" => $uid);
+                            $error = array('status' => "error", "message" => "Error while logging: first failed login data to database.", "data" => $uid);
                         }
 
                     } else {
+                        //ChromePhp::log("REST-API: YET ANOTHER TIME ". (strtotime(date('Y-m-d H:i:s')) - strtotime($ffLogTime)));
                         /* yet another unsuccessful login since */
                         $fLogCount ++; // commit to db.
 
-                        $sql = "UPDATE secureemail.credentials SET fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
+                        $sql = "UPDATE 7appstudio_com.credentials SET fLogCount='".$fLogCount."' WHERE uid = '".$uid."'";
                         if ($this->mysqli->query($sql) === TRUE) {
-                            $error = array('status' => "error", "msg" => "logged yet another failed login.", "data" => $uid);
+                            $error = array('status' => "error", "message" => "logged yet another failed login.", "data" => $uid);
                         } else {
-                            $error = array('status' => "error", "msg" => "Error while logging: yet another failed login.", "data" => $uid);
+                            $error = array('status' => "error", "message" => "Error while logging: yet another failed login.", "data" => $uid);
                         }
                     }
-                    $this->response($this->json($error), 204);	// If no records "No Content" status
+                    //ChromePhp::log("REST-API: ".$this->json($error));
+                    $this->response($this->json($error), 404);	// If no records "No Content" status
                 }
                 $this->mysqli->close();
             }
@@ -135,31 +146,11 @@ class API extends REST {
         }
     }
 
-    /*private function getKeyPair(){
-        $uid = (string)$_GET['uid'];
-        $ps = (string)$_GET['ps'];
-        $ph = (string)$_GET['ph'];
-
-        if(!empty($uid) and !empty($ps) and !empty($ph) ){
-            $sql = "SELECT pubkey, privkey FROM secureemail.credentials WHERE uid = '".$uid."' AND ph = '".$ph."' LIMIT 1";
-            $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
-
-            if($r->num_rows > 0) {
-                $result = $r->fetch_assoc();
-                //ChromePhp::log("REST-API: GOT THIS: " . $this->json($result));
-                $this->response($this->json($result), 200);
-            } else {
-                $this->response('', 204);	// If no records "No Content" status
-            }
-            $this->mysqli->close();
-        }
-    }*/
-
     private function getPublicKey(){
         $uid = (string)$_GET['uid'];
 
         if(!empty($uid)){
-            $sql = "SELECT pubkey FROM secureemail.credentials WHERE uid = '".$uid."' LIMIT 1";
+            $sql = "SELECT pubkey FROM 7appstudio_com.credentials WHERE uid = '".$uid."' LIMIT 1";
             $r = $this->mysqli->query($sql) or die($this->mysqli->error.__LINE__);
 
             if($r->num_rows > 0) {
@@ -167,8 +158,8 @@ class API extends REST {
                 //ChromePhp::log("REST-API: GOT THIS: " . $this->json($result));
                 $this->response($this->json($result), 200);
             } else {
-                $error = array('status' => "error", "msg" => "user does not exist or does not have a key pair", "data" => $uid);
-                $this->response($this->json($error),204);	//"No Content" status
+                $error = array('status' => "error", "message" => "user does not exist or does not have a key pair", "data" => $uid);
+                $this->response($this->json($error),501);	//"No Content" status
             }
             $this->mysqli->close();
         }

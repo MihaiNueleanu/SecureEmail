@@ -3,15 +3,15 @@
 
 (function () {
     /*creating app (currently adding coockies and route)*/
-    var app = angular.module('app', ['ngCookies', 'ngRoute', 'ngSanitize', 'ui.tinymce', 'directive.g+signin']);
+    var app = angular.module('app', ['ngRoute', 'ngSanitize', 'ui.tinymce', 'directive.g+signin', 'LocalStorageModule']);
 
     /* whenever change page or load ensuring user is logged in if not redirecting to home */
-    app.run(function($rootScope, $location, $cookieStore, $timeout) {
+    app.run(function($rootScope, $location, $timeout, localStorageService ) {
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-            if ($cookieStore.get("signedIn") == "true") {
-                console.log("cookie check value is true");
+            if (localStorageService.get("signedIn") == "true") {
+                console.log("localStorageService check value is true");
             }else{
-                console.log("cookie check value is not true ill redirect just in case.");
+                console.log("localStorageService check value is not true ill redirect just in case.");
                 $location.path("/home");
             }
         });
@@ -35,7 +35,6 @@
         });
     });
 
-    /* testing for a userEmail cookie and if does not exist redirecting to main */
     app.constant("CONFIG", {
         "TEXT": {
             "ERROR": "Something went wrong...",
@@ -63,128 +62,37 @@
         ]
     });
 
+    app.config(function (localStorageServiceProvider) {
+        localStorageServiceProvider
+            .setPrefix('mizaru')
+            .setStorageCookieDomain('7appstudio.com')
+            .setStorageType('localStorage')
+            .setNotify(true, true);
+    });
+
     /*configuring http requests */
     app.config(function ($httpProvider) {
         $httpProvider.defaults.withCredentials = true;
         $httpProvider.interceptors.push('httpRequestInterceptor');
     });
 
-    /*loading-spinner http Requests Interceptor */
-    app.factory('httpRequestInterceptor', ['$rootScope', function ($rootScope) {
-        var interceptor = {
-            'request': function (config) {
-                $rootScope.$broadcast('event:show-loader');
-                return config; //show loader and create request (loader showing has built in delay to avoid showing it when not needed)
-            },
-            'response': function (response) {
-                $rootScope.$broadcast('event:hide-loader');
-                return response; // hide loader and return response
-            },
-            'requestError': function (rejection) {
-                return response; // error handling
-            },
-            'responseError': function (rejection) {
-                return rejection; // error handling
-            }
-        };
-        return interceptor;
-    }]);
-
-    app.factory("ppsService", ['$http', '$location', '$cookieStore','$rootScope','flash', function($http ,$location, $cookieStore, $rootScope, flash) {
-        var serviceBase = 'services/'
-        var obj = {};
-
-        var items = [];
-
-        obj.addItem = function(item) {
-            items.push(item);
-        };
-        obj.removeItem = function(item) {
-            var index = items.indexOf(item);
-            items.splice(index, 1);
-        };
-        obj.items = function() {
-            return items;
-        };
-
-        obj.createAccount = function (uid , ps , ph , pubkey , privkey) {
-            console.log("IN THE FACTORY WE HAVE: uid:" + uid + " ,ps: " + ps + " ,ph: " + ph + " ,AND THE KEYS...");
-            return $http.post(serviceBase + 'createAccount',{
-                'uid': uid,
-                'ps': ps,
-                'ph': ph,
-                'pubkey': pubkey,
-                'privkey': privkey
-            }).then(function (result) {
-                if (result.status != 404) {
-                    $rootScope.$broadcast('event:key-pair-created');
-                    console.log(result);
-                    return result;
-                } else {
-                    flash.setMessage({"status":"error", "message":"cannot create user, user already exists, try signing in instead"});
-                    console.log("ERROR: Unable to create account, account already exists");
-                    $cookieStore.put("accountExists","true");
-                    $location.path("/home");
-                }
-            });
-        };
-
-        obj.getKeyPair = function(uid , ps , ph ){
-            console.log("$http.get(" + serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph)
-            return $http.get(serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph).then(function (result) {
-                console.log(result);
-
-                //test if keys were recieved
-                if (result.status != 404) {
-                    $cookieStore.put("pubkey",result.data.pubkey);
-                    $cookieStore.put("privkey",result.data.privkey);
-                    $rootScope.$broadcast('event:show-menu');
-                    $location.path("/emails");
-                    return result;
-                } else {
-                    flash.setMessage(result.data);
-                    console.log("ERROR: Unable to retrieve key pair");
-                    $location.path("/home");
-                }
-            });
-        };
-
-        obj.getPublicKey = function(uid ){
-            if (uid != undefined) {
-                console.log("$http.get(" + serviceBase + 'getPublicKey?uid=' + uid )
-                return $http.get(serviceBase + 'getPublicKey?uid=' + uid).then(function (result) {
-
-                    //test if public key revieved
-                    if (result.status != 404) {
-                        $cookieStore.put("rpubkey",result.data.pubkey);
-                        return result;
-                    } else {
-                        console.log("unable to retrieve public key" + result);
-                    }
-                });
-            }
-        };
-
-        return obj;
-    }]);
-
     /* configuring route provider (views) */
     app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
-        when('/emails', {
-            templateUrl: 'views/emails/index.html',
-            controller: 'emailsController'
-        }).
-        when('/email/:param', {
-            templateUrl: 'views/email/index.html',
-            controller: 'singleEmailController'
-        }).
-        when('/home', {
-            templateUrl: 'views/index.html'
-        }).
-        otherwise({
-            redirectTo: '/home'
-        });
+            when('/emails', {
+                templateUrl: 'views/emails/index.html',
+                controller: 'emailsController'
+            }).
+            when('/email/:param', {
+                templateUrl: 'views/email/index.html',
+                controller: 'singleEmailController'
+            }).
+            when('/home', {
+                templateUrl: 'views/index.html'
+            }).
+            otherwise({
+                redirectTo: '/home'
+            });
     }]);
 
     /* configuring flash messages based on API call responses */
@@ -212,6 +120,92 @@
         }
     });
 
+    /*loading-spinner http Requests Interceptor */
+    app.factory('httpRequestInterceptor', ['$rootScope', function ($rootScope) {
+        var interceptor = {
+            'request': function (config) {
+                $rootScope.$broadcast('event:show-loader');
+                return config; //show loader and create request (loader showing has built in delay to avoid showing it when not needed)
+            },
+            'response': function (response) {
+                $rootScope.$broadcast('event:hide-loader');
+                return response; // hide loader and return response
+            },
+            'requestError': function (rejection) {
+                return response; // error handling
+            },
+            'responseError': function (rejection) {
+                return rejection; // error handling
+            }
+        };
+        return interceptor;
+    }]);
+
+    app.factory("ppsService", ['$http', '$location', '$rootScope','flash', 'localStorageService', function($http ,$location, $rootScope, flash, localStorageService) {
+        var serviceBase = 'services/'
+        var obj = {};
+
+        obj.createAccount = function (uid , ps , ph , pubkey , privkey) {
+            console.log("IN THE FACTORY WE HAVE: uid:" + uid + " ,ps: " + ps + " ,ph: " + ph + " ,AND THE KEYS...");
+            return $http.post(serviceBase + 'createAccount',{
+                'uid': uid,
+                'ps': ps,
+                'ph': ph,
+                'pubkey': pubkey,
+                'privkey': privkey
+            }).then(function (result) {
+                if (result.status != 404) {
+                    $rootScope.$broadcast('event:key-pair-created');
+                    console.log(result);
+                    return result;
+                } else {
+                    flash.setMessage({"status":"error", "message":"cannot create user, user already exists, try signing in instead"});
+                    console.log("ERROR: Unable to create account, account already exists");
+                    localStorageService.set("accountExists","true");
+                    $location.path("/home");
+                }
+            });
+        };
+
+        obj.getKeyPair = function(uid , ps , ph ){
+            console.log("$http.get(" + serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph)
+            return $http.get(serviceBase + 'getKeyPair?uid=' + uid +'&ps='+ ps + '&ph='+ ph).then(function (result) {
+                console.log(result);
+
+                //test if keys were recieved
+                if (result.status != 404) {
+                    localStorageService.set("pubkey",result.data.pubkey);
+                    localStorageService.set("privkey",result.data.privkey);
+                    $rootScope.$broadcast('event:show-menu');
+                    $location.path("/emails");
+                    return result;
+                } else {
+                    flash.setMessage(result.data);
+                    console.log("ERROR: Unable to retrieve key pair");
+                    $location.path("/home");
+                }
+            });
+        };
+
+        obj.getPublicKey = function(uid ){
+            if (uid != undefined) {
+                console.log("$http.get(" + serviceBase + 'getPublicKey?uid=' + uid )
+                return $http.get(serviceBase + 'getPublicKey?uid=' + uid).then(function (result) {
+
+                    //test if public key revieved
+                    if (result.status != 404) {
+                        localStorageService.set("rpubkey",result.data.pubkey);
+                        return result;
+                    } else {
+                        console.log("unable to retrieve public key" + result);
+                    }
+                });
+            }
+        };
+
+        return obj;
+    }]);
+
     /*navigation (list of links in bottom) + SSO Validation call*/
     app.controller("NavController", ['CONFIG', '$scope','$rootScope', function (CONFIG, $scope, $rootScope) {
         $scope.hideNav = true;
@@ -234,17 +228,25 @@
     }]);
 
     /*main controller (general table row selection + displaying messages)*/
-    app.controller("mainController", [ '$scope', 'flash', '$location', '$rootScope', '$cookieStore','$timeout', function ($scope, flash, $location, $rootScope, $cookieStore, $timeout ) {
+    app.controller("mainController", [ '$scope', 'flash', '$location', '$rootScope', 'ppsService', 'localStorageService', '$timeout', function ($scope, flash, $location, $rootScope, ppsService, localStorageService, $timeout ) {
         $scope.userEmail;
         $scope.displayName;
         $scope.userImage;
 
         $scope.signupProgress = 0;
         $scope.keyPairGenerated = false;
-        $scope.accountExists = $cookieStore.get("accountExists");
+
+        $scope.accountExists = localStorageService.get("accountExists");
 
         if ($scope.accountExists == 'true') {
             console.log("MAINCONTROLLER: user already have an account");
+            $scope.keyPairGenerated = true;
+        }
+
+        $scope.signIn = function () {
+            console.log("MAINCONTROLLER: this should expose the sign in controller");
+            localStorageService.set("accountExists","true");
+            $scope.accountExists = 'true'
             $scope.keyPairGenerated = true;
         }
 
@@ -254,26 +256,20 @@
         };
 
         $scope.signOut = function () {
-            console.log("signing out + removing cookies + resetting scope variables");
+            console.log("signing out + removing + resetting scope variables");
             gapi.auth.signOut();
 
-            angular.forEach($cookieStore, function (cookie, key) {
-                if (key.indexOf('NAV-') > -1) {
-                    $window.sessionStorage.setItem(key, cookie);
-                    delete $cookieStore[key];
-                }
-            });
-            $cookieStore.remove("ph");
-            $cookieStore.remove("pubkey");
-            $cookieStore.remove("privkey");
-            $cookieStore.remove("rpubkey");
+            localStorageService.remove("ph");
+            localStorageService.remove("pubkey");
+            localStorageService.remove("privkey");
+            localStorageService.remove("rpubkey");
 
             $scope.userEmail = null;
             $scope.displayName = null;
             $scope.userImage = null;
 
-            //$rootScope.signedIn = false;
-            $cookieStore.put("signedIn","false");
+            localStorageService.set("signedIn","false");
+
             $('#signin .step.step-1').removeClass('hidden');
             $('#signin .step.step-1').removeClass('hidden');
             $rootScope.$broadcast('event:hide-menu');
@@ -304,8 +300,9 @@
         };
 
         $scope.accountCreated = function () {
+            console.log("FUNCTION:accountCreated");
             $scope.accountExists = true;
-            $cookieStore.put("accountExists", "true");
+            localStorageService.set("accountExists","true");
             $rootScope.$broadcast('event:request-key-pair');
         };
 
@@ -320,24 +317,25 @@
         });
 
         $rootScope.$on('event:google-plus-signin-success', function () {
-            console.log("RUN: user is signed in");
+            console.log("EVENT: GOOGLE API SIGN-IN SUCCESS");
             $('#signup .step.step-1').addClass('hidden');
             $('#signup .step.step-2').removeClass('hidden');
             $('#signin .step.step-1').addClass('hidden');
             $('#signin .step.step-2').removeClass('hidden');
-            $cookieStore.put("signedIn","true");
+            localStorageService.set("signedIn","true");
+            console.log(localStorageService.get("signedIn"));
             $scope.getUserInfo();
         });
 
         $rootScope.$on('event:google-plus-signin-failure', function () {
-            console.log("RUN: user signed out (redirecting to home)");
+            console.log("EVENT: GOOGLE API SIGN-IN FAILURE");
             $('#signup .step.step-1').removeClass('hidden');
-            $cookieStore.put("signedIn","false");
+            localStorageService.set("signedIn","false");
             $location.path("/home");
         });
 
         $rootScope.$on('event:key-pair-created', function () {
-            console.log("KEY PAIR CREATED SUCESSFULLY IN A DIFFERENT CONTROLLER");
+            console.log("EVENT:KEY PAIR CREATED");
             $scope.signupProgress = 100;
             $scope.keyPairGenerated = true;
             $('#signup .step.step-3').removeClass('hidden');
@@ -346,7 +344,7 @@
     }]);
 
     /*sign-up(FORM) controller */
-    app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', function ($scope, flash, $location, $rootScope, ppsService) {
+    app.controller("signupController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', 'localStorageService', function ($scope, flash, $location, $rootScope, ppsService ,localStorageService) {
         console.log("in the signup(createAccount) controller!");
 
         $scope.passphrase;
@@ -393,7 +391,7 @@
     }]);
 
     /*sign-in(FORM) controller */
-    app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService','$cookieStore', function ($scope, flash, $location, $rootScope, ppsService, $cookieStore) {
+    app.controller("signinController", ['$scope', 'flash', '$location', '$rootScope', 'ppsService', 'localStorageService', function ($scope, flash, $location, $rootScope, ppsService ,localStorageService) {
         console.log("in the signin(getKeyPair) controller!");
 
         $scope.passphrase;
@@ -412,7 +410,8 @@
         });
 
         $scope.getKeyPair = function() {
-            if ($cookieStore.get("signedIn") == "true") {
+            console.log("TRYING TO GET KEY PAIR: " + localStorageService.get("signedIn"));
+            if (localStorageService.get("signedIn") == "true") {
                 console.log("SIGNINCONTROLLER: trying to get a key pair");
                 var userId = $rootScope.userEmail;
 
@@ -420,8 +419,7 @@
                 var salt = btoa(userId);
                 var temp = CryptoJS.SHA1($scope.passphrase + salt);
                 var hash = temp.toString();
-
-                $cookieStore.put ("ph",hash);
+                localStorageService.set("ph",hash);
                 ppsService.getKeyPair(userId , salt , hash);
             } else {
                 flash.setMessage({"status":"error","message":"Please make sure you are currently signed-in to your service provider "})
@@ -435,16 +433,16 @@
     }]);
 
     /*compose mail form controller*/
-    app.controller('composeMailController', ['$scope', 'flash', '$location', '$cookieStore','$rootScope', 'ppsService', function ($scope, flash, $location, $cookieStore, $rootScope, ppsService) {
+    app.controller('composeMailController', ['$scope', 'flash', '$location', '$rootScope', 'ppsService', 'localStorageService', function ($scope, flash, $location, $rootScope, ppsService ,localStorageService) {
         $scope.pubkey;
         $scope.privkey;
 
-        if($cookieStore.get('pubkey') != "undefined") {
-            $scope.pubkey = $cookieStore.get('pubkey');
+        if(localStorageService.get('pubkey') != "undefined") {
+            $scope.pubkey = localStorageService.get('pubkey');
         }
 
-        if($cookieStore.get('privkey') != "undefined") {
-            $scope.privkey = $cookieStore.get('privkey');
+        if(localStorageService.get('privkey') != "undefined") {
+            $scope.privkey = localStorageService.get('privkey');
         }
 
         $scope.mailTo = undefined ;
@@ -455,9 +453,9 @@
         $scope.$watch('mailTo', function() {
             if ($scope.mailTo != undefined) {
                 ppsService.getPublicKey($scope.mailTo).then(function() {
-                    if($cookieStore.get("rpubkey") != undefined) {
+                    if(localStorageService.get("rpubkey") != undefined) {
                         console.log("A key exists for user")
-                        $scope.recipentPublicKey = $cookieStore.get("rpubkey");
+                        $scope.recipentPublicKey = localStorageService.get("rpubkey");
                         $scope.canEncrypt =  true;
                         console.log($scope.recipentPublicKey);
                     } else {
@@ -472,10 +470,11 @@
             //tinyMCE.triggerSave();
 
             if ($scope.canEncrypt) {
-                console.log("Trying to encrypted message")
+                console.log("Trying to encrypted message ");
                 $scope.encryptedMailContent;
 
                 var encryptMailContent = function(publicKey, mailContent) {
+                    console.log("Trying to encrypted message: " + publicKey + " mailContent: " + mailContent);
                     /*console.log("encryptMailContent: Trying to encrypt: publicKey : \n" + publicKey + "\n\n mailContent: \n" + mailContent )*/
                     var key = openpgp.key.readArmored(publicKey);
 
@@ -530,16 +529,16 @@
     }]);
 
     /*emails controller*/
-    app.controller('emailsController', ['$scope','$rootScope', 'flash', '$cookieStore', function ($scope, $rootScope, flash, $cookieStore) {
+    app.controller('emailsController', ['$scope', 'flash', '$rootScope', 'ppsService', 'localStorageService', '$interval', function ($scope, flash, $rootScope, ppsService ,localStorageService, $interval) {
         $scope.pubkey;
         $scope.privkey;
 
-        if($cookieStore.get('pubkey') != "undefined") {
-            $scope.pubkey = $cookieStore.get('pubkey');
+        if(localStorageService.get('pubkey') != "undefined") {
+            $scope.pubkey = localStorageService.get('pubkey');
         }
 
-        if($cookieStore.get('privkey') != "undefined") {
-            $scope.privkey = $cookieStore.get('privkey');
+        if(localStorageService.get('privkey') != "undefined") {
+            $scope.privkey = localStorageService.get('privkey');
         }
 
         var extractField = function(json, fieldName) {
@@ -567,6 +566,7 @@
         $rootScope.$broadcast('event:show-loader');
 
         $scope.getEmailsBatch = function(userEmail, maxResults){
+            $scope.emailsObject = [{}];
             gapi.client.request({
                 'path': 'https://www.googleapis.com/gmail/v1/users/'+userEmail+'/messages?maxResults='+maxResults,
                 'method': 'GET',
@@ -594,8 +594,6 @@
 
                     //console.log(batchRequest);
                     batchRequest.then(function(jsonBulkMessages){
-                        //console.log(jsonBulkMessages.result);
-
                         $.each(jsonBulkMessages.result, function(i, item) {
 
                             from = extractField(item, "From");
@@ -611,9 +609,8 @@
                                 //console.log("snippet is not there");
                             }
 
-
                             $scope.$apply(function(){
-                                //console.log("mailId: " + item.result.id + " subject: " + subject + " date: " + date + " from: " + from +" to: " +to);
+                                //$scope.emailsObject.length = 0;
                                 $scope.emailsObject.push({"mailId":item.result.id,"subject":subject , "date":date, "from":from,"to":to,"secure":isSecure});
                             });
 
@@ -629,12 +626,15 @@
             });
         };
 
-        $scope.getEmailsBatch($scope.userEmail, 25); //TODO filter out google hangouts from mails
+        //$interval(function() {
+            $scope.getEmailsBatch($scope.userEmail, 25); //TODO filter out google hangouts from mails
+        //}, 6000);
+
 
     }]);
 
     /*single email controller (new,edit & delete )*/
-    app.controller('singleEmailController', [ '$scope' , 'flash' , '$http' , '$rootScope', '$routeParams','$cookieStore', function ( $scope, flash, $http, $rootScope, $routeParams, $cookieStore ) {
+    app.controller('singleEmailController', [ '$scope' , 'flash' , '$http' , '$rootScope', '$routeParams','ppsService', 'localStorageService', function ( $scope, flash, $http, $rootScope, $routeParams, ppsService ,localStorageService ) {
         $rootScope.$broadcast('event:show-loader');
         $scope.param = $routeParams.param;
         console.log('params are - '+$scope.param);
@@ -679,7 +679,7 @@
                             console.log("I should decrypt a message");
                             encryptedMessage = atob(part.replace(/-/g, '+').replace(/_/g, '/'));
 
-                            var key = $cookieStore.get('privkey');
+                            var key = localStorageService.get('privkey');
                             console.log("this is my key: " + key);
                             var privateKey = openpgp.key.readArmored(key).keys[0];
                             console.log("this is my privateKey: " + privateKey);

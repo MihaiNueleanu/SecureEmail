@@ -279,3 +279,8 @@ div.col-sm-6.col-md-4:nth-of-type(3)> div {
     margin-bottom: 0px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
+
+.btn.btn-link {
+    color: #ffffff;
+    text-decoration: underline;
+}

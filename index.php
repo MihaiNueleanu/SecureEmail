@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>    
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
@@ -75,6 +75,7 @@
                             <input type="text" class="form-control" id="Subject" ng-model="mailSubject" placeholder="Subject" required>
                         </div>
                         <div class="form-group">
+                            {{mailContent}}
                             <label for="mailContent">Message</label>
                             <textarea class="form-control" rows="5" id="mailContent" ui-tinymce ng-model="mailContent" ng-minlength="1" placeholder="Write your secret message here" required></textarea>
                         </div>
@@ -90,18 +91,19 @@
 
     <div ng-view ng-cloak></div>
 
-    <!-- loading angular scripts -->
+    <!-- CDN angular scripts -->
     <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-cookies.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-route.js"></script>
     <script type="text/javascript" src="//code.angularjs.org/1.3.15/angular-sanitize.js"></script>
 
-    <!-- Google Sign In -->
-    <script type="text/javascript" src="js/google-plus-signin.js"></script>
+    <!-- Local AngularJS modules -->
+    <script type="text/javascript" src="js/angular-google-plus-signin.js"></script>
+    <script type="text/javascript" src="js/angular-local-storage.js"></script>
 
     <!-- tinyMCE -->
     <script type="text/javascript" src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
-    <script type="text/javascript" src="js/ng.tinymce.js"></script>
+    <script type="text/javascript" src="js/angular-tinymce.js"></script>
 
     <!-- loading bootstrap + jquery -->
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
@@ -109,7 +111,7 @@
 
     <!-- loading pgp + crypto hash(SHA-1) -->
     <script type="text/javascript" src="js/openpgp.js"></script>
-    <script type="text/javascript" src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
+    <script type="text/javascript" src="//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js"></script>
 
     <!-- general functions -->
     <script type="text/javascript" src="js/functions.js"></script>
@@ -118,11 +120,10 @@
     <script type="text/javascript" src="js/ng.app.js"></script>
 
     <script type="text/javascript">
-            tinymce.init({
-                selector: "textarea"
-            });
+        tinymce.init({
+            selector: "textarea"
+        });
     </script>
-
 </body>
 </html>
 

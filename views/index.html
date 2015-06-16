@@ -1,7 +1,10 @@
 <div class="jumbotron">
     <h1>Welcome to the most private mail service EVER(!)</h1>
-    <p>We believe that user privacy is important, because of that we would never read your mails, heck we would try and ensure no one else could read them too.<span class="label label-info">Signing up takes only 3 simple steps.</span></p>
-    <a class="btn btn-lg btn-success" id="signupButton" ng-hide="accountExists">Signup here</a>
+    <p>We believe that user privacy is important, because of that we would never read your mails, heck we would try and ensure no one else could read them too.</p>
+
+    <p ng-hide="accountExists">It doesnt seem you have an account, create one<span class="label label-info">It only takes about a minute.</span><br/>
+        <a class="btn btn-lg btn-success" id="signupButton">Signup here</a><br/>
+        if you already have an account <a class="btn btn-link" ng-click="signIn()">sign in to your account instead</a></p>
     <div id="signin" class="signin" ng-show="accountExists">
         <h2>Nice to see you again, please sign into your account</h2>
         <div class="step step-1">
