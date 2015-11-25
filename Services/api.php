@@ -14,10 +14,10 @@ class API extends REST {
 
     /*7appstudio.com.mysql*/
     //Production settings
-    const DB_SERVER = "10.246.17.60:3306";
-    const DB_USER = "7appstudio_com";
-    const DB_PASSWORD = "fSQMUscx";
-    const DB = "7appstudio_com";
+    const DB_SERVER = "255.255.255.255:3306";
+    const DB_USER = "examplename";
+    const DB_PASSWORD = "12345678";
+    const DB = "examplename";
 
     private $db = NULL;
     private $mysqli = NULL;
